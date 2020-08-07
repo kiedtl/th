@@ -20,8 +20,8 @@ fn display(map: [[char; 80]; 200]) {
 fn drunkards(map: &mut [[char; 80]; 200]) {
     let mut rng = rand::thread_rng();
 
-    let mapheight = 20_f64;
-    let mapwidth  = 80_f64;
+    let mapheight = 20.0;
+    let mapwidth  = 80.0;
 
     let iterations = 500000;
     let weighted_towards_center = 0.1;
@@ -76,7 +76,7 @@ fn drunkards(map: &mut [[char; 80]; 200]) {
         let dy: isize;
         let choice: f64 = rng.gen();
 
-        if 0_f64 <= choice && choice < north {
+        if 0.0 <= choice && choice < north {
             direction = "north";
             dx = 0;
             dy = -1;
