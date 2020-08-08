@@ -1,13 +1,13 @@
 use rand::prelude::*;
 
-//struct Drunkard {
-//}
+struct Drunkard {
+}
 
-pub fn drunkards(map: &mut [[char; 130]; 200]) {
+pub fn walk(map: &mut [[f64; 205]; 50]) {
     let mut rng = rand::thread_rng();
 
-    let mapheight = 200.0;
-    let mapwidth  = 130.0;
+    let mapheight = 50.0;
+    let mapwidth  = 205.0;
 
     let iterations = 500000;
     let weighted_towards_center = 0.05;
@@ -86,12 +86,11 @@ pub fn drunkards(map: &mut [[char; 130]; 200]) {
                 walker_pos_x += dx;
                 walker_pos_y += dy;
 
-                if map[walker_pos_y as usize][walker_pos_x as usize] == '#' {
-                    map[walker_pos_y as usize][walker_pos_x as usize] = ' ';
+                if map[walker_pos_y as usize][walker_pos_x as usize] == 0.0 {
+                    map[walker_pos_y as usize][walker_pos_x as usize] += 5.0;
                     filled += 1;
-                } else {
-                    map[walker_pos_y as usize][walker_pos_x as usize] = '#';
-                    //filled -= 1;
+                } else {// if map[walker_pos_y as usize][walker_pos_x as usize] <= 5.0 {
+                    map[walker_pos_y as usize][walker_pos_x as usize] -= 0.8;
                 }
 
                 previous_direction = direction;
