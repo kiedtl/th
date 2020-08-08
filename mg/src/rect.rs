@@ -1,3 +1,5 @@
+use crate::dirs;
+
 #[derive(PartialEq, Clone, Debug)]
 pub struct Rect {
     pub x1: usize,
@@ -12,11 +14,11 @@ impl Rect {
     }
 
     // check if Rect self intersects Rect other
-    pub fn intersects(&self, other: &Rect) -> bool {
-        (self.x1.saturating_sub(3) < other.x2 &&
-            self.x2.saturating_add(4) > other.x1 &&
-         self.y1.saturating_sub(3) < other.y2 &&
-            self.y2.saturating_add(4) > other.y1)
+    pub fn intersects(&self, other: &Rect, padding: usize) -> bool {
+        self.x1.saturating_sub(padding) < other.x2 &&
+            self.x2.saturating_add(padding) > other.x1 &&
+         self.y1.saturating_sub(padding) < other.y2 &&
+            self.y2.saturating_add(padding) > other.y1
     }
 
     pub fn center(&self) -> (usize, usize) {
@@ -30,7 +32,7 @@ impl Rect {
         let bottom = other.y2 < self.y1;
         let top = self.y2 < other.y1;
 
-        let mut dist =
+        let dist =
             |x1: usize, y1: usize, x2: usize, y2: usize| {
                 (((x2.saturating_sub(x1)).pow(2) +
                   (y2.saturating_sub(y1)).pow(2))as f64).sqrt() as usize
@@ -56,5 +58,41 @@ impl Rect {
             // nada, it intersects
             return 0;
         }
+    }
+
+    // get the surrounding "wall" of rect
+    // the coordinates returned by this function
+    // will not contain any coordinates contained
+    // inside the rectangle itself.
+    pub fn wall(&self, direction: &dirs::Direction) -> Vec<(usize, usize)> {
+        let mut coords: Vec<(usize, usize)> = Vec::new();
+
+        match direction {
+            dirs::Direction::North => {
+                for x in self.x1..self.x2 {
+                    coords.push((self.y1.saturating_add(1), x));
+                }
+            },
+            dirs::Direction::South => {
+                for x in self.x1..self.x2 {
+                    coords.push((self.y2.saturating_sub(1), x));
+                }
+            },
+            dirs::Direction::East  => {
+                for y in self.y1..self.y2 {
+                    coords.push((y, self.x2.saturating_add(1)));
+                }
+            },
+            dirs::Direction::West  => {
+                for y in self.y1..self.y2 {
+                    coords.push((y, self.x2.saturating_sub(1)));
+                }
+            },
+
+            // TODO: implement NW, NE, etc
+            _ => (),
+        }
+
+        coords
     }
 }

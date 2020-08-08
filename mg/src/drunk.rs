@@ -1,7 +1,7 @@
 use rand::prelude::*;
 
-struct Drunkard {
-}
+//struct Drunkard {
+//}
 
 pub fn walk(map: &mut [[f64; 205]; 50]) {
     let mut rng = rand::thread_rng();
@@ -54,10 +54,10 @@ pub fn walk(map: &mut [[f64; 205]; 50]) {
         north /= total;
         south /= total;
         east /= total;
-        west /= total;
+        //west /= total; // this is unused
 
         // choose the direction to walk into
-        let mut direction = "";
+        let direction: &str;
         let dx: isize;
         let dy: isize;
         let choice: f64 = rng.gen();

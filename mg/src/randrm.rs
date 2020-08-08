@@ -23,12 +23,10 @@ pub fn tunnel(map: &mut [[f64; 205]; 50]) {
     let mut tunnels: Vec<rect::Rect> = Vec::new();
     let mut num_rooms = 0;
 
-    let mut failed_rooms = 0;
-
-    let mut does_intersect =
+    let does_intersect =
         |r: &rect::Rect, group: &Vec<rect::Rect>| {
             for hovel in group {
-                if r.intersects(hovel) {
+                if r.intersects(hovel, 4) {
                     return true;
                 }
             }
@@ -59,7 +57,7 @@ pub fn tunnel(map: &mut [[f64; 205]; 50]) {
 
             rooms.push(new_room);
             num_rooms += 1;
-        } else { failed_rooms += 1; }
+        }
     }
 
     // sort rooms by distance
@@ -83,8 +81,8 @@ pub fn tunnel(map: &mut [[f64; 205]; 50]) {
         let start_with_horiz_tunnel: bool = rng.gen();
 
         // tunnels
-        let mut tun1: rect::Rect;
-        let mut tun2: rect::Rect;
+        let tun1: rect::Rect;
+        let tun2: rect::Rect;
 
         // decide on the layour of the tunnels
         // in a way that still connects both rooms but
