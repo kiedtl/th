@@ -1,4 +1,3 @@
-mod astar;
 mod dirs;
 mod drunk;
 mod features;
@@ -6,6 +5,7 @@ mod randrm;
 mod rect;
 
 use std::vec::Vec;
+use pathfinding::prelude::{absdiff, astar};
 use rand::prelude::*;
 
 type Dungeon = [[bool; 205]; 50];
@@ -112,7 +112,15 @@ fn cellular_automata<R: Rng>(map: &mut Dungeon, rng: &mut R) {
     // to all other open spaces
     let mut all_connected = true;
     for space in 1..(open_spaces.len() - 2) {
-        match astar::astar(map, open_spaces[0], open_spaces[space]) {
+        println!("{} out of {}", space, open_spaces.len() - 2);
+        let result = astar(&open_spaces[0],
+            |&(x, y)| vec![(x+0, y.saturating_sub(1)), (x+0, y+1), (x.saturating_sub(1), y+0), (x+1, y+0),
+                    (x.saturating_sub(1), y.saturating_sub(1)), (x.saturating_sub(1), y+1), (x+1, y.saturating_sub(1)), (x+1, y+1)]
+                .into_iter().map(|p| (p, 1)),
+            |&(x, y)| absdiff(x, open_spaces[space].1) +
+                absdiff(y, open_spaces[space].0),
+            |&p| p == open_spaces[space]);
+        match result {
             Some(_) => continue,
             None => {
                 all_connected = false;
@@ -122,6 +130,7 @@ fn cellular_automata<R: Rng>(map: &mut Dungeon, rng: &mut R) {
     }
 
     if !all_connected {
-        cellular_automata(map, rng); // try again
+        //cellular_automata(map, rng); // try again
+        println!("WARNING: some areas may not connected");
     }
 }
