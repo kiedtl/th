@@ -8,7 +8,7 @@ use std::vec::Vec;
 use std::cmp::{min, max};
 use rand::prelude::*;
 
-pub fn tunnel(map: &mut [[f64; 205]; 50]) {
+pub fn tunnel(map: &mut [[bool; 205]; 50]) {
     // TODO: pass rng as argument
     let mut rng = rand::thread_rng();
 
@@ -101,11 +101,11 @@ pub fn tunnel(map: &mut [[f64; 205]; 50]) {
     }
 }
 
-fn create_room(map: &mut [[f64; 205]; 50], room: &rect::Rect) {
+fn create_room(map: &mut [[bool; 205]; 50], room: &rect::Rect) {
     // set all squares in rectange to 5.0
     for y in (room.y1 - 1)..room.y2 {
         for x in (room.x1 - 1)..room.x2 {
-            map[y][x] = 5.0;
+            map[y][x] = true;
         }
     }
 }

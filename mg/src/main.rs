@@ -16,8 +16,8 @@ fn main() {
     let mut rng = rand::thread_rng();
 
     //drunk::walk(&mut map);
-    //randrm::tunnel(&mut map);
     cellular_automata(&mut map, &mut rng);
+    randrm::tunnel(&mut map);
     display(map);
 }
 
@@ -25,9 +25,9 @@ fn display(map: Dungeon) {
     for y in 0..50 {
         for x in 0..205 {
             if map[y][x] {
-                print!(".");
+                print!("·");
             } else {
-                print!("#");
+                print!("▓");
             }
             //print!("{}", map[y][x] as u8);
         }
@@ -90,47 +90,13 @@ fn cellular_automata<R: Rng>(map: &mut Dungeon, rng: &mut R) {
     generation(true);
     generation(true);
     generation(true);
+    generation(true);
+
+    generation(false);
+
+    generation(true);
 
     generation(false);
     generation(false);
     generation(false);
-    generation(false);
-    generation(false);
-    generation(false);
-
-    // check map!
-    let mut open_spaces = Vec::new();
-    for y in 0..50 {
-        for x in 0..205 {
-            if map[y][x] {
-                open_spaces.push((y, x));
-            }
-        }
-    }
-
-    // check that first open space is connected
-    // to all other open spaces
-    let mut all_connected = true;
-    for space in 1..(open_spaces.len() - 2) {
-        println!("{} out of {}", space, open_spaces.len() - 2);
-        let result = astar(&open_spaces[0],
-            |&(x, y)| vec![(x+0, y.saturating_sub(1)), (x+0, y+1), (x.saturating_sub(1), y+0), (x+1, y+0),
-                    (x.saturating_sub(1), y.saturating_sub(1)), (x.saturating_sub(1), y+1), (x+1, y.saturating_sub(1)), (x+1, y+1)]
-                .into_iter().map(|p| (p, 1)),
-            |&(x, y)| absdiff(x, open_spaces[space].1) +
-                absdiff(y, open_spaces[space].0),
-            |&p| p == open_spaces[space]);
-        match result {
-            Some(_) => continue,
-            None => {
-                all_connected = false;
-                break;
-            },
-        }
-    }
-
-    if !all_connected {
-        //cellular_automata(map, rng); // try again
-        println!("WARNING: some areas may not connected");
-    }
 }
