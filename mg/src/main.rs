@@ -3,14 +3,17 @@ mod drunk;
 mod dun_s1;
 mod cellular;
 mod features;
+mod thiparse;
 mod randrm;
 mod rect;
 
-use crate::dun_s1::*;
 use crate::drunk::*;
+use crate::dun_s1::*;
 use crate::cellular::*;
+use crate::thiparse::*;
 use crate::randrm::*;
 use rand::prelude::*;
+use std::fs;
 
 fn main() {
     let mut rng = rand::thread_rng();
@@ -43,10 +46,15 @@ fn main() {
         .room_max_width(16)
         .room_max_height(8)
         .room_min_width(4)
-        .room_min_height(2)
-        .tunnel();
+        .room_min_height(2);
+        //.tunnel();
 
-    display(&map);
+    //display(&map);
+
+    let d: Vec<String> = fs::read_to_string("sample.thi").unwrap()
+        .split('\n').map(|v| v.to_string()).collect();
+    let i = InfoFileData::from_lines(d.clone());
+    println!("info:\n\n{:?}", i);
 }
 
 fn display(map: &DungeonS1) {
