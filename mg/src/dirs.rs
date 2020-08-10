@@ -3,7 +3,7 @@ use rand::{
     Rng,
 };
 
-#[derive(Debug)]
+#[derive(Copy, Debug, Clone, PartialEq)]
 pub enum Direction {
     North,
     South,
