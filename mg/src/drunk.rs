@@ -1,108 +1,149 @@
 use rand::prelude::*;
+use crate::dirs::*;
+use crate::dun_s1::*;
 
-//struct Drunkard {
-//}
+pub struct Drunkard<'a, R: Rng> {
+    map: &'a mut DungeonS1,
+    max_iterations: usize,
+    center_weight: f64,
+    previous_direction_weight: f64,
+    filled_goal: f64,
+    rng: &'a mut R,
+}
 
-pub fn walk(map: &mut [[f64; 205]; 50]) {
-    let mut rng = rand::thread_rng();
-
-    let mapheight = 50.0;
-    let mapwidth  = 205.0;
-
-    let iterations = 500000;
-    let weighted_towards_center = 0.05;
-    let weighted_towards_previous_direction = 0.7;
-    let percent_goal = 0.45;
-
-    let mut filled = 0;
-    let mut previous_direction = ""; // TODO: enum
-
-    let filled_goal  = mapwidth * mapheight * percent_goal;
-    let mut walker_pos_x: isize = rng.gen_range(2, (mapwidth as usize)  - 2) as isize;
-    let mut walker_pos_y: isize = rng.gen_range(2, (mapheight as usize) - 2) as isize;
-
-    let mut walk = || { // rustc, why do I need this mut again?
-        // probability of going in a direction
-        let mut north = 1.0;
-        let mut south = 1.0;
-        let mut east  = 1.0;
-        let mut west  = 1.0;
-
-        // weight the random walk against map edges
-        if (walker_pos_x as f64) < mapwidth * 0.25 { // walker is at far left
-            east += weighted_towards_center;
-        } else if (walker_pos_x as f64) > mapwidth * 0.75 { // walker is at far right
-            west += weighted_towards_center;
+impl<'a, R: Rng> Drunkard<'a, R> {
+    pub fn new(map: &'a mut DungeonS1, rng: &'a mut R) -> Drunkard<'a, R> {
+        Drunkard {
+            map: map,
+            max_iterations: 5000,
+            center_weight: 0.1,
+            previous_direction_weight: 0.65,
+            filled_goal: 0.25,
+            rng: rng,
         }
+    }
 
-        if (walker_pos_y as f64) < mapheight * 0.25 { // walker is at the top
-            south += weighted_towards_center;
-        } else if (walker_pos_y  as f64) > mapheight * 0.75 { // walker is at the bottom
-            north += weighted_towards_center;
-        }
+    pub fn max_iterations(&mut self, iterations: usize) -> &mut Drunkard<'a, R> {
+        self.max_iterations = iterations;
+        self
+    }
 
-        match previous_direction {
-            "north" => north -= weighted_towards_previous_direction,
-            "south" => south -= weighted_towards_previous_direction,
-            "west"  => west  -= weighted_towards_previous_direction,
-            "east"  => east  -= weighted_towards_previous_direction,
-            _ => (),
-        }
+    pub fn center_weight(&mut self, weight: f64) -> &mut Drunkard<'a, R> {
+        self.center_weight = weight;
+        self
+    }
 
-        // normalize probabilities so they form a range from 0..1
-        let total = north + south + east + west;
-        north /= total;
-        south /= total;
-        east /= total;
-        //west /= total; // this is unused
+    pub fn previous_direction_weight(&mut self, weight: f64) -> &mut Drunkard<'a, R> {
+        self.previous_direction_weight = weight;
+        self
+    }
 
-        // choose the direction to walk into
-        let direction: &str;
-        let dx: isize;
-        let dy: isize;
-        let choice: f64 = rng.gen();
+    pub fn filled_goal(&mut self, goal: f64) -> &mut Drunkard<'a, R> {
+        self.filled_goal = goal;
+        self
+    }
 
-        if 0.0 <= choice && choice < north {
-            direction = "north";
-            dx = 0;
-            dy = -1;
-        } else if north <= choice  && choice < (north + south) {
-            direction = "south";
-            dx = 0;
-            dy = 1;
-        } else if (north + south) <= choice  && choice < (north + south + east) {
-            direction = "east";
-            dx = 1;
-            dy = 0;
-        } else {
-            direction = "west";
-            dx = -1;
-            dy = 0;
-        }
+    pub fn walk(&mut self) {
+        let mut filled = 0;
+        let mut previous_direction = Direction::North;
+        let mut iterations = 0;
 
-        // the actual walking
-        if (0 < walker_pos_x + dx && walker_pos_x + dx < (mapwidth as isize) - 1) &&
-            (0 < walker_pos_y + dy && walker_pos_y + dy < (mapheight as isize) - 1) {
-                walker_pos_x += dx;
-                walker_pos_y += dy;
+        let filled_goal  = ((self.map.width * self.map.height) as f64) * self.filled_goal;
+        let mut walker_pos_x: isize = (self.map.width / 2)  as isize;
+        let mut walker_pos_y: isize = (self.map.height / 2) as isize;
 
-                if map[walker_pos_y as usize][walker_pos_x as usize] == 0.0 {
-                    map[walker_pos_y as usize][walker_pos_x as usize] += 5.0;
-                    filled += 1;
-                } else {// if map[walker_pos_y as usize][walker_pos_x as usize] <= 5.0 {
-                    map[walker_pos_y as usize][walker_pos_x as usize] -= 0.8;
-                }
+        let mut iteration = || {
+            // probability of going in a direction
+            let mut north = 1.0;
+            let mut south = 1.0;
+            let mut east  = 1.0;
+            let mut west  = 1.0;
 
-                previous_direction = direction;
-        }
+            if self.map.width > self.map.height {
+                east += east * (self.map.width as f64 / self.map.height as f64);
+                west += west * (self.map.width as f64 / self.map.height as f64);
+            } else if self.map.height > self.map.width {
+                north += north * (self.map.height as f64 / self.map.width as f64);
+                south += north * (self.map.height as f64 / self.map.width as f64);
+            }
 
-        (filled as f64) >= filled_goal
-    };
+            // weight the random walk against map edges
+            if (walker_pos_x as f64) < (self.map.width as f64) * 0.25 {
+                // walker is at far left
+                east += self.center_weight;
+            } else if (walker_pos_x as f64) > (self.map.width as f64) * 0.75 {
+                // walker is at far right
+                west += self.center_weight;
+            }
 
-    for _ in 0..iterations {
-        if walk() {
-            break;
+            if (walker_pos_y as f64) < (self.map.height as f64) * 0.25 {
+                // walker is at the top
+                south += self.center_weight;
+            } else if (walker_pos_y as f64) > (self.map.height as f64) * 0.75 {
+                // walker is at the bottom
+                north += self.center_weight;
+            }
+
+            match previous_direction {
+                Direction::North => north += self.previous_direction_weight,
+                Direction::South => south += self.previous_direction_weight,
+                Direction::West  => west  += self.previous_direction_weight,
+                Direction::East  => east  += self.previous_direction_weight,
+                _ => (),
+            }
+
+            // normalize probabilities so they form a range from 0..1
+            let total = north + south + east + west;
+            north /= total;
+            south /= total;
+            east /= total;
+            west /= total; // this is unused
+
+            // choose the direction to walk into
+            let dx: isize;
+            let dy: isize;
+            let mut direction = [(Direction::North, north), (Direction::South, south),
+                (Direction::East, east), (Direction::West, west)]
+                    .choose_weighted(&mut self.rng, |i| i.1).unwrap().0;
+
+            if direction == Direction::North {
+                dx = 0;
+                dy = -1;
+            } else if direction == Direction::South {
+                dx = 0;
+                dy = 1;
+            } else if direction == Direction::East {
+                dx = 1;
+                dy = 0;
+            } else if direction == Direction::West {
+                dx = -1;
+                dy = 0;
+            } else {
+                // wait wat
+                dx = 0;
+                dy = 0;
+            }
+
+            // the actual walking
+            if (0 < walker_pos_x + dx && walker_pos_x + dx < (self.map.width as isize) - 1) &&
+                (0 < walker_pos_y + dy && walker_pos_y + dy < (self.map.height as isize) - 1) {
+                    walker_pos_x += dx;
+                    walker_pos_y += dy;
+
+                    if self.map.d[walker_pos_y as usize][walker_pos_x as usize] == TileType::Wall {
+                        self.map.set(walker_pos_x as usize, walker_pos_y as usize, TileType::Floor);
+                        filled += 1;
+                    }
+
+                    previous_direction = direction;
+            }
+
+            iterations += 1;
+            ((filled as f64) <= filled_goal) ||
+                iterations <= self.max_iterations
+        };
+
+        while iteration() {
         }
     }
 }
-
