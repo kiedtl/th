@@ -1,10 +1,10 @@
--- vim: ts=4 sts=4 sw=4 expandtab
+# vim: ts=4 sts=4 sw=4 expandtab
 
-section dungeon_info
+section DUNGEON_INFO
     LAYERS 2
 end_section
 
-section layer_info
+section LAYER_INFO
     LAYER                           1
     CONTAINED_LEVELS                2
     DIMENSIONS                      205 66
@@ -14,7 +14,7 @@ section layer_info
     DRUNK_MAX_ITERATIONS            5000
 end_section
 
-section layer_info
+section LAYER_INFO
     LAYER                           2
     CONTAINED_LEVELS                1
     DIMENSIONS                      100 50
