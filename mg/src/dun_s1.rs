@@ -20,7 +20,7 @@ impl DungeonS1 {
     pub fn new(width: usize, height: usize) -> DungeonS1 {
         let mut dungeon: Vec<Vec<TileType>> = Vec::new();
         for _ in 0..height {
-            dungeon.push(vec![TileType::Floor; width]);
+            dungeon.push(vec![TileType::Wall; width]);
         }
 
         DungeonS1 {
