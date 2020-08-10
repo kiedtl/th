@@ -1,5 +1,13 @@
+use std::vec::Vec;
 use rand::prelude::*;
 use crate::dun_s1::*;
+
+#[derive(Clone, Debug)]
+pub enum JobType {
+    RandomFill,
+    Generation(bool),  // allow_islands
+    FloorBar(usize),   // height
+}
 
 pub struct CellularAutomata<'a, R: Rng> {
     map: &'a mut DungeonS1,
@@ -7,10 +15,11 @@ pub struct CellularAutomata<'a, R: Rng> {
     wall_requirement: usize,
     island_requirement: usize,
     rng: &'a mut R,
+    schedule: Vec<JobType>,
 }
 
-impl<R: Rng> CellularAutomata<'_, R> {
-    pub fn new<'a>(
+impl<'a, R: Rng> CellularAutomata<'a, R> {
+    pub fn new(
         map: &'a mut DungeonS1,
         rng: &'a mut R
     ) -> CellularAutomata<'a, R> {
@@ -19,20 +28,39 @@ impl<R: Rng> CellularAutomata<'_, R> {
             open_space_percentage: 64,
             wall_requirement: 6,
             island_requirement: 2,
-            rng: rng
+            rng: rng,
+            schedule: Vec::new(),
         }
     }
 
-    pub fn open_space_percentage(&mut self, chance: usize) {
+    pub fn schedule_job(&'a mut self, job: JobType) -> &'a mut CellularAutomata<'a, R> {
+        self.schedule.push(job);
+        self
+    }
+
+    pub fn do_work(&mut self) {
+        for job in self.schedule.clone() {
+            match job {
+                JobType::RandomFill => self.random_fill(),
+                JobType::Generation(i) => self.generation(i),
+                JobType::FloorBar(h) => self.floor_bar(h),
+            }
+        }
+    }
+
+    pub fn open_space_percentage(&'a mut self, chance: usize) -> &'a mut CellularAutomata<'a, R> {
         self.open_space_percentage = chance;
+        self
     }
 
-    pub fn wall_requirement(&mut self, requirement: usize) {
+    pub fn wall_requirement(&'a mut self, requirement: usize) -> &'a mut CellularAutomata<'a, R> {
         self.wall_requirement = requirement;
+        self
     }
 
-    pub fn island_requirement(&mut self, requirement: usize) {
+    pub fn island_requirement(&'a mut self, requirement: usize) -> &'a mut CellularAutomata<'a, R> {
         self.island_requirement = requirement;
+        self
     }
 
     pub fn random_fill(&mut self) {
@@ -40,12 +68,13 @@ impl<R: Rng> CellularAutomata<'_, R> {
         self.map.rand_fill(self.rng, self.open_space_percentage);
     }
 
-    pub fn add_floor_bar(&mut self, height: usize) {
+    pub fn floor_bar(&mut self, height: usize) {
         // add a horizontal bar of floors in the center of the map
         // as it may prevent a continuous vertical wall from forming,
         // thus preventing isolated sections
-        for y in ((50 / 2) as usize)..(((50 / 2) + height) as usize) {
-            for x in 0_usize..204_usize {
+        let halfway = (self.map.height / 2) as usize;
+        for y in halfway..(halfway + height) {
+            for x in 0_usize..self.map.width {
                 self.map.set(x, y, TileType::Floor);
             }
         }
@@ -53,8 +82,8 @@ impl<R: Rng> CellularAutomata<'_, R> {
 
     pub fn generation(&mut self, allow_islands: bool) {
         let oldmap = self.map.clone();
-        for y in 0_usize..49_usize {
-            for x in 0_usize..204_usize {
+        for y in 0_usize..(self.map.height - 1) {
+            for x in 0_usize..(self.map.width - 1) {
                 // all eight surrounding tiles
                 let neighbors: &[(usize, usize); 9] =
                     &[(y.saturating_sub(1), x.saturating_sub(1)),

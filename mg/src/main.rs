@@ -13,29 +13,29 @@ use rand::prelude::*;
 
 fn main() {
     let mut rng = rand::thread_rng();
-    let mut map = DungeonS1::new(205, 50);
+    let mut map = DungeonS1::new(205, 66);
 
-    //let mut cgen = CellularAutomata::new(&mut map, &mut rng);
-    //cgen.open_space_percentage(64);
-    //cgen.wall_requirement(6);
-    //cgen.island_requirement(2);
+    CellularAutomata::new(&mut map, &mut rng)
+        .open_space_percentage(64)
+        .wall_requirement(6)
+        .island_requirement(2)
+        .schedule_job(JobType::RandomFill)
+        .schedule_job(JobType::FloorBar(1))
+        .schedule_job(JobType::Generation(true))
+        .schedule_job(JobType::Generation(true))
+        .schedule_job(JobType::Generation(true))
+        .schedule_job(JobType::Generation(false))
+        .schedule_job(JobType::Generation(false))
+        .schedule_job(JobType::Generation(false))
+        .schedule_job(JobType::Generation(false))
+        .do_work();
 
-    //cgen.random_fill();
-    //cgen.add_floor_bar(1);
-    //cgen.generation(true);
-    //cgen.generation(true);
-    //cgen.generation(true);
-    //cgen.generation(false);
-    //cgen.generation(false);
-    //cgen.generation(false);
-    //cgen.generation(false);
-
-    let mut d = Drunkard::new(&mut map, &mut rng)
+    Drunkard::new(&mut map, &mut rng)
         .center_weight(0.1)
         .previous_direction_weight(0.65)
         .max_iterations(5000)
-        .filled_goal(0.25)
-        .walk();
+        .filled_goal(0.25);
+        //.walk();
 
     display(&map);
 }
