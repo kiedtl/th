@@ -1,7 +1,8 @@
 use rand::prelude::*;
+use crate::dun_s1::*;
 
 pub struct CellularAutomata<'a, R: Rng> {
-    map: &'a mut [[bool; 205]; 50],
+    map: &'a mut DungeonS1,
     open_space_percentage: usize,
     wall_requirement: usize,
     island_requirement: usize,
@@ -10,7 +11,7 @@ pub struct CellularAutomata<'a, R: Rng> {
 
 impl<R: Rng> CellularAutomata<'_, R> {
     pub fn new<'a>(
-        map: &'a mut [[bool; 205]; 50],
+        map: &'a mut DungeonS1,
         rng: &'a mut R
     ) -> CellularAutomata<'a, R> {
         CellularAutomata {
@@ -36,11 +37,7 @@ impl<R: Rng> CellularAutomata<'_, R> {
 
     pub fn random_fill(&mut self) {
         // fill map randomly
-        for y in 0..50 {
-            for x in 0..205 {
-                self.map[y][x] = self.rng.gen_range(0, 100) < 64;
-            }
-        }
+        self.map.rand_fill(self.rng, self.open_space_percentage);
     }
 
     pub fn add_floor_bar(&mut self, height: usize) {
@@ -49,7 +46,7 @@ impl<R: Rng> CellularAutomata<'_, R> {
         // thus preventing isolated sections
         for y in ((50 / 2) as usize)..(((50 / 2) + height) as usize) {
             for x in 0_usize..204_usize {
-                self.map[y][x] = true;
+                self.map.set(x, y, TileType::Floor);
             }
         }
     }
@@ -69,19 +66,19 @@ impl<R: Rng> CellularAutomata<'_, R> {
 
                 for neighbor in neighbors {
                     let (ny, nx) = *neighbor;
-                    if !oldmap[ny][nx] {
+                    if oldmap.d[ny][nx] == TileType::Wall {
                         neighboring_walls += 1;
                     }
                 }
 
                 if neighboring_walls >= self.wall_requirement {
-                    self.map[y][x] = false;
+                    self.map.set(x, y, TileType::Wall);
                 } else {
                     if allow_islands &&
                         neighboring_walls <= self.island_requirement {
-                            self.map[y][x] = false;
+                            self.map.set(x, y, TileType::Wall);
                     } else {
-                        self.map[y][x] = true;
+                        self.map.set(x, y, TileType::Floor);
                     }
                 }
             }

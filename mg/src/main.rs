@@ -1,19 +1,18 @@
 mod dirs;
 mod drunk;
+mod dun_s1;
 mod cellular;
 mod features;
 mod randrm;
 mod rect;
 
+use crate::dun_s1::*;
 use crate::cellular::*;
 use rand::prelude::*;
 
-type Dungeon = [[bool; 205]; 50];
-
 fn main() {
-    // 50 rows; 205 columns
-    let mut map = [[false; 205]; 50];
     let mut rng = rand::thread_rng();
+    let mut map = DungeonS1::new(205, 50);
 
     let mut cgen = CellularAutomata::new(&mut map, &mut rng);
     cgen.open_space_percentage(64);
@@ -30,18 +29,16 @@ fn main() {
     cgen.generation(false);
     cgen.generation(false);
 
-    display(map);
+    display(&map);
 }
 
-fn display(map: Dungeon) {
-    for y in 0..50 {
-        for x in 0..205 {
-            if map[y][x] {
-                print!("·");
-            } else {
-                print!("▓");
+fn display(map: &DungeonS1) {
+    for y in 0..map.height {
+        for x in 0..map.width {
+            match map.d[y][x] {
+                TileType::Floor => print!("·"),
+                TileType::Wall  => print!("▓"),
             }
-            //print!("{}", map[y][x] as u8);
         }
         print!("\n");
     }
