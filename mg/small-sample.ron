@@ -1,0 +1,19 @@
+// vim: ts=4 sts=4 sw=4 expandtab
+
+DungeonSpecification(
+    layers: [
+        LayerSpecification(
+            levels: 1,
+            dimensions: (200, 50),
+            algorithm: RandomRooms(
+                RandomRoomsOptions(
+                    max_rooms: None,
+                    room_max_width: 24,
+                    room_max_height: 12,
+                    room_min_width: 4,
+                    room_min_height: 2,
+                )
+            )
+        ),
+    ]
+)

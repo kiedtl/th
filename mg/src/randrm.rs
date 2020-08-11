@@ -8,61 +8,75 @@ use crate::dun_s1::*;
 use std::vec::Vec;
 use std::cmp::{min, max};
 use rand::prelude::*;
+use serde::Deserialize;
 
-pub struct RandomRooms<'a, R: Rng> {
-pub    map: &'a mut DungeonS1,
-pub    max_rooms: Option<usize>,
-pub    room_max_width: usize,
-pub    room_max_height: usize,
-pub    room_min_width: usize,
-pub    room_min_height: usize,
-pub    rng: &'a mut R,
+#[derive(Copy, Clone, Debug, Deserialize)]
+pub struct RandomRoomsOptions {
+    max_rooms: Option<usize>,
+    room_max_width: usize,
+    room_max_height: usize,
+    room_min_width: usize,
+    room_min_height: usize,
 }
 
-impl <'a, R: Rng> RandomRooms<'a, R> {
-    pub fn new(map: &'a mut DungeonS1, rng: &'a mut R) -> RandomRooms<'a, R> {
-        RandomRooms {
-            map: map,
+impl RandomRoomsOptions {
+    pub fn new() -> RandomRoomsOptions {
+        RandomRoomsOptions {
             max_rooms: None,
             room_max_width: 16,
             room_max_height: 8,
             room_min_width: 4,
             room_min_height: 2,
-            rng: rng,
         }
     }
 
-    pub fn max_rooms(&'a mut self, value: usize) -> &'a mut RandomRooms<'a, R> {
+    pub fn max_rooms(mut self, value: usize) -> RandomRoomsOptions {
         self.max_rooms = Some(value);
         self
     }
 
-    pub fn room_max_width(&'a mut self, value: usize) -> &'a mut RandomRooms<'a, R> {
+    pub fn room_max_width(mut self, value: usize) -> RandomRoomsOptions {
         self.room_max_width = value;
         self
     }
 
-    pub fn room_max_height(&'a mut self, value: usize) -> &'a mut RandomRooms<'a, R> {
+    pub fn room_max_height(mut self, value: usize) -> RandomRoomsOptions {
         self.room_max_height = value;
         self
     }
 
-    pub fn room_min_width(&'a mut self, value: usize) -> &'a mut RandomRooms<'a, R> {
+    pub fn room_min_width(mut self, value: usize) -> RandomRoomsOptions {
         self.room_min_width = value;
         self
     }
 
-    pub fn room_min_height(&'a mut self, value: usize) -> &'a mut RandomRooms<'a, R> {
+    pub fn room_min_height(mut self, value: usize) -> RandomRoomsOptions {
         self.room_min_height = value;
         self
+    }
+}
+
+pub struct RandomRooms<'a, R: Rng> {
+    map: &'a mut DungeonS1,
+    options: RandomRoomsOptions,
+    rng: &'a mut R,
+}
+
+impl <'a, R: Rng> RandomRooms<'a, R> {
+    pub fn new(map: &'a mut DungeonS1, rng: &'a mut R, opt: RandomRoomsOptions) -> RandomRooms<'a, R> {
+        RandomRooms {
+            map: map,
+            options: opt,
+            rng: rng,
+        }
     }
 
     pub fn tunnel(&mut self) {
         let max_rooms: usize;
-        match self.max_rooms {
+        match self.options.max_rooms {
             None => {
                 max_rooms = (self.map.height * self.map.width) /
-                    (self.room_max_width * self.room_max_height * 4);
+                    (self.options.room_max_width * self.options.room_max_height * 4);
             },
             Some(n) => max_rooms = n,
         }
@@ -83,8 +97,8 @@ impl <'a, R: Rng> RandomRooms<'a, R> {
 
         for _ in 0..max_rooms {
             // random width and height
-            let w = self.rng.gen_range(self.room_min_width,  self.room_max_width);
-            let h = self.rng.gen_range(self.room_min_height, self.room_max_height);
+            let w = self.rng.gen_range(self.options.room_min_width,  self.options.room_max_width);
+            let h = self.rng.gen_range(self.options.room_min_height, self.options.room_max_height);
 
             // random position within map boundaries
             let x = self.rng.gen_range(1, self.map.width  - w - 2);

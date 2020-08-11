@@ -2,79 +2,84 @@ mod dirs;
 mod drunk;
 mod dun_s1;
 mod cellular;
-mod features;
-mod thiparse;
 mod randrm;
 mod rect;
 
 use crate::drunk::*;
 use crate::dun_s1::*;
 use crate::cellular::*;
-use crate::thiparse::*;
 use crate::randrm::*;
-use rand::prelude::*;
-use std::fs;
+
+use ron::de::from_reader;
+use serde::Deserialize;
+use std::fs::File;
+
+#[derive(Debug, Deserialize)]
+enum MapgenAlgorithm {
+    Drunkard(DrunkardOptions),
+    Cellular(CellularAutomataOptions),
+    RandomRooms(RandomRoomsOptions),
+}
+
+#[derive(Debug, Deserialize)]
+struct LayerSpecification {
+    levels: usize,
+    dimensions: (usize, usize),   // (width, height)
+    algorithm: MapgenAlgorithm,
+}
+
+#[derive(Debug, Deserialize)]
+struct DungeonSpecification {
+    layers: Vec<LayerSpecification>,
+}
 
 fn main() {
     let mut rng = rand::thread_rng();
     let mut dungeons_s1: Vec<DungeonS1> = Vec::new();
 
-    let d: Vec<String> = fs::read_to_string("sample.thi").unwrap()
-        .split('\n').map(|v| v.to_string()).collect();
-    let i = InfoFileData::from_lines(d.clone());
+    let args = std::env::args().collect::<Vec<String>>();
+    if args.len() < 2 {
+        eprintln!("{}: need DungeonSpecification file.", args[0]);
+        eprintln!("usage: {} <file.ron>", args[0]);
+        std::process::exit(1);
+    }
 
-    // get number of layers
-    let layer_len = i.d["DUNGEON_INFO"]
-        .section()["LAYERS"].values()[0]
-        .parse::<usize>().unwrap(); // TODO: chk
+    let input_path = &args[1];
+    let fconf;
+    match File::open(input_path) {
+        Ok(f) => fconf = f,
+        Err(e) => {
+            println!("{}: \"{}\": {}", args[0], input_path, e);
+            std::process::exit(1);
+        },
+    }
 
-    for l in 0..layer_len {
-        let layer_info = i.d[&format!("LAYER_{}", l)].section();
-        let levels = layer_info["CONTAINED_LEVELS"].values()[0]
-            .parse::<usize>().unwrap();
-        let width  = layer_info["DIMENSIONS"].values()[0]
-            .parse::<usize>().unwrap();
-        let height = layer_info["DIMENSIONS"].values()[1]
-            .parse::<usize>().unwrap();
-        let algorithms = layer_info["ALGORITHM"].values();
+    let config: DungeonSpecification = match from_reader(fconf) {
+        Ok(x) => x,
+        Err(e) => {
+            println!("Failed to load config: {}", e);
+            std::process::exit(1);
+        }
+    };
 
-        for _ in 0..levels {
-            let mut map = DungeonS1::new(width, height);
-            // TODO: use builders
-            // make all algorithm implementation
-            // have a common trait or something
-            // perhaps then we can rewrite this mess
-            for algorithm in &algorithms {
-                match algorithm.as_str() {
-                    "drunk" => {
-                        let mut d = Drunkard::new(&mut map, &mut rng);
-
-                        if layer_info.contains_key("DRUNK_CENTER_WEIGHT") {
-                            d.center_weight = layer_info["DRUNK_CENTER_WEIGHT"]
-                                .values()[0].parse::<f64>().unwrap();
-                        }
-
-                        if layer_info.contains_key("DRUNK_PREVIOUS_DIRECTION_WEIGHT") {
-                            d.previous_direction_weight = layer_info["DRUNK_PREVIOUS_DIRECTION_WEIGHT"]
-                                .values()[0].parse::<f64>().unwrap();
-                        }
-
-                        if layer_info.contains_key("DRUNK_MAX_ITERATIONS") {
-                            d.max_iterations = layer_info["DRUNK_MAX_ITERATIONS"]
-                                .values()[0].parse::<usize>().unwrap();
-                        }
-
-                        if layer_info.contains_key("DRUNK_FILLED_GOAL") {
-                            d.filled_goal = layer_info["DRUNK_FILLED_GOAL"]
-                                .values()[0].parse::<f64>().unwrap();
-                        }
-
-                        d.walk();
-                    },
-                    _ => (),
-                }
+    for layer in &config.layers {
+        for _level in 0..layer.levels {
+            let mut map = DungeonS1::new(layer.dimensions.0,
+                layer.dimensions.1);
+            match &layer.algorithm {
+                MapgenAlgorithm::Drunkard(d) => {
+                    Drunkard::new(&mut map, &mut rng, *d)
+                        .walk();
+                },
+                MapgenAlgorithm::Cellular(c) => {
+                    CellularAutomata::new(&mut map, &mut rng, c.clone())
+                        .do_work();
+                },
+                MapgenAlgorithm::RandomRooms(r) => {
+                    RandomRooms::new(&mut map, &mut rng, *r)
+                        .tunnel();
+                },
             }
-
             display(&map);
             dungeons_s1.push(map);
         }

@@ -3,16 +3,67 @@
 DungeonSpecification(
     layers: [
         LayerSpecification(
-            levels: 2,
-            dimensions: (205, 66),
+            levels: 5,
+            dimensions: (400, 200),
+            algorithm: RandomRooms(
+                RandomRoomsOptions(
+                    max_rooms: None,
+                    room_max_width: 24,
+                    room_max_height: 12,
+                    room_min_width: 4,
+                    room_min_height: 2,
+                )
+            )
+        ),
+
+        LayerSpecification(
+            levels: 3,
+            dimensions: (400, 200),
             algorithm: Drunkard(
                 DrunkardOptions(
                     center_weight: 0.1,
                     previous_direction_weight: 0.65,
                     max_iterations: 5000,
                     filled_goal: 0.25,
-                )
+                ),
             ),
+        ),
+
+        LayerSpecification(
+            levels: 5,
+            dimensions: (200, 50),
+            algorithm: Cellular(
+                CellularAutomataOptions(
+                    open_space_percentage: 55,
+                    wall_requirement: 6,
+                    island_requirement: 2,
+                    schedule: [
+                        RandomFill,
+                        FloorBar(1),
+                        Generation(true),
+                        Generation(true),
+                        Generation(true),
+                        Generation(true),
+                        Generation(false),
+                        Generation(false),
+                        Generation(false),
+                    ],
+                ),
+            ),
+        ),
+
+        LayerSpecification(
+            levels: 9,
+            dimensions: (100, 50),
+            algorithm: RandomRooms(
+                RandomRoomsOptions(
+                    max_rooms: None,
+                    room_max_width: 16,
+                    room_max_height: 8,
+                    room_min_width: 4,
+                    room_min_height: 2,
+                )
+            )
         ),
     ]
 )

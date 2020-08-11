@@ -1,45 +1,76 @@
 use std::vec::Vec;
+use serde::Deserialize;
 use rand::prelude::*;
+
 use crate::dun_s1::*;
 
-#[derive(Clone, Debug)]
+#[derive(Copy, Clone, Debug, Deserialize)]
 pub enum JobType {
     RandomFill,
     Generation(bool),  // allow_islands
     FloorBar(usize),   // height
 }
 
-pub struct CellularAutomata<'a, R: Rng> {
-    map: &'a mut DungeonS1,
+#[derive(Clone, Debug, Deserialize)]
+pub struct CellularAutomataOptions {
     open_space_percentage: usize,
     wall_requirement: usize,
     island_requirement: usize,
-    rng: &'a mut R,
     schedule: Vec<JobType>,
+}
+
+impl CellularAutomataOptions {
+    pub fn new() -> CellularAutomataOptions {
+        CellularAutomataOptions {
+            open_space_percentage: 64,
+            wall_requirement: 6,
+            island_requirement: 2,
+            schedule: Vec::new(),
+        }
+    }
+
+    pub fn schedule_job(mut self, job: JobType) -> CellularAutomataOptions {
+        self.schedule.push(job);
+        self
+    }
+
+    pub fn open_space_percentage(mut self, chance: usize) -> CellularAutomataOptions {
+        self.open_space_percentage = chance;
+        self
+    }
+
+    pub fn wall_requirement(mut self, requirement: usize) -> CellularAutomataOptions {
+        self.wall_requirement = requirement;
+        self
+    }
+
+    pub fn island_requirement(mut self, requirement: usize) -> CellularAutomataOptions {
+        self.island_requirement = requirement;
+        self
+    }
+}
+
+pub struct CellularAutomata<'a, R: Rng> {
+    map: &'a mut DungeonS1,
+    options: CellularAutomataOptions,
+    rng: &'a mut R,
 }
 
 impl<'a, R: Rng> CellularAutomata<'a, R> {
     pub fn new(
         map: &'a mut DungeonS1,
-        rng: &'a mut R
+        rng: &'a mut R,
+        opt: CellularAutomataOptions,
     ) -> CellularAutomata<'a, R> {
         CellularAutomata {
             map: map,
-            open_space_percentage: 64,
-            wall_requirement: 6,
-            island_requirement: 2,
+            options: opt,
             rng: rng,
-            schedule: Vec::new(),
         }
     }
 
-    pub fn schedule_job(&'a mut self, job: JobType) -> &'a mut CellularAutomata<'a, R> {
-        self.schedule.push(job);
-        self
-    }
-
     pub fn do_work(&mut self) {
-        for job in self.schedule.clone() {
+        for job in self.options.schedule.clone() {
             match job {
                 JobType::RandomFill => self.random_fill(),
                 JobType::Generation(i) => self.generation(i),
@@ -48,24 +79,9 @@ impl<'a, R: Rng> CellularAutomata<'a, R> {
         }
     }
 
-    pub fn open_space_percentage(&'a mut self, chance: usize) -> &'a mut CellularAutomata<'a, R> {
-        self.open_space_percentage = chance;
-        self
-    }
-
-    pub fn wall_requirement(&'a mut self, requirement: usize) -> &'a mut CellularAutomata<'a, R> {
-        self.wall_requirement = requirement;
-        self
-    }
-
-    pub fn island_requirement(&'a mut self, requirement: usize) -> &'a mut CellularAutomata<'a, R> {
-        self.island_requirement = requirement;
-        self
-    }
-
     pub fn random_fill(&mut self) {
         // fill map randomly
-        self.map.rand_fill(self.rng, self.open_space_percentage);
+        self.map.rand_fill(self.rng, self.options.open_space_percentage);
     }
 
     pub fn floor_bar(&mut self, height: usize) {
@@ -100,11 +116,11 @@ impl<'a, R: Rng> CellularAutomata<'a, R> {
                     }
                 }
 
-                if neighboring_walls >= self.wall_requirement {
+                if neighboring_walls >= self.options.wall_requirement {
                     self.map.set(x, y, TileType::Wall);
                 } else {
                     if allow_islands &&
-                        neighboring_walls <= self.island_requirement {
+                        neighboring_walls <= self.options.island_requirement {
                             self.map.set(x, y, TileType::Wall);
                     } else {
                         self.map.set(x, y, TileType::Floor);
