@@ -4,21 +4,50 @@ use std::vec::Vec;
 use std::collections::HashMap;
 
 #[derive(Clone, Debug)]
-enum InfoField {
+pub enum InfoField {
     Values(Vec<String>),
     Flag(String),
-    Section(String, HashMap<String, InfoField>),
+    Section(HashMap<String, InfoField>),
+}
+
+impl InfoField {
+    pub fn values(&self) -> Vec<String> {
+        if let InfoField::Values(v) = self {
+            return v.clone();
+        } else {
+            // TODO: return result
+            return vec![];
+        }
+    }
+
+    pub fn section(&self) -> HashMap<String, InfoField> {
+        if let InfoField::Section(h) = self {
+            return h.clone();
+        } else {
+            // TODO: return result
+            return HashMap::new();
+        }
+    }
 }
 
 #[derive(Clone, Debug)]
 pub struct InfoFileData {
-    data: Vec<InfoField>,
+    // d is for data
+    pub d: HashMap<String, InfoField>
 }
 
 impl InfoFileData {
+    pub fn has_key(&self, key: &str) -> bool {
+        if !self.d.contains_key(key) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     pub fn from_lines(lines: Vec<String>) -> InfoFileData {
         let mut parsed = InfoFileData {
-            data: Vec::new(),
+            d: HashMap::new(),
         };
 
         fn parse_section(
@@ -35,15 +64,19 @@ impl InfoFileData {
                             &lines[(l + 1)..]);
                     },
                     "end_section" => {
-                        accm.data.push(InfoField::Section(section_name, section));
+                        accm.d.insert(section_name, InfoField::Section(section));
                         return l
                     },
                     _ => {
                         if split.len() > 1 {
+                            // filter out empty values
+                            let values = split[1..].iter()
+                                .map(|v| v.to_string())
+                                .filter(|v| v.len() > 0)
+                                .collect::<Vec<String>>();
+
                             section.insert(split[0].to_string(),
-                                InfoField::Values(split[1..].iter()
-                                    .map(|v| v.to_string())
-                                    .filter(|v| v.len() > 0).collect::<Vec<String>>()));
+                                InfoField::Values(values));
                         } else {
                             section.insert(split[0].to_owned(),
                                 InfoField::Flag(split[0].to_string()));

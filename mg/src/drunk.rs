@@ -3,12 +3,12 @@ use crate::dirs::*;
 use crate::dun_s1::*;
 
 pub struct Drunkard<'a, R: Rng> {
-    map: &'a mut DungeonS1,
-    max_iterations: usize,
-    center_weight: f64,
-    previous_direction_weight: f64,
-    filled_goal: f64,
-    rng: &'a mut R,
+    pub map: &'a mut DungeonS1,
+    pub max_iterations: usize,
+    pub center_weight: f64,
+    pub previous_direction_weight: f64,
+    pub filled_goal: f64,
+    pub rng: &'a mut R,
 }
 
 impl<'a, R: Rng> Drunkard<'a, R> {
@@ -102,7 +102,7 @@ impl<'a, R: Rng> Drunkard<'a, R> {
             // choose the direction to walk into
             let dx: isize;
             let dy: isize;
-            let mut direction = [(Direction::North, north), (Direction::South, south),
+            let direction = [(Direction::North, north), (Direction::South, south),
                 (Direction::East, east), (Direction::West, west)]
                     .choose_weighted(&mut self.rng, |i| i.1).unwrap().0;
 
