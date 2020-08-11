@@ -1,0 +1,18 @@
+// vim: ts=4 sts=4 sw=4 expandtab
+
+DungeonSpecification(
+    layers: [
+        LayerSpecification(
+            levels: 2,
+            dimensions: (205, 66),
+            algorithm: Drunkard(
+                DrunkardOptions(
+                    center_weight: 0.1,
+                    previous_direction_weight: 0.65,
+                    max_iterations: 5000,
+                    filled_goal: 0.25,
+                )
+            ),
+        ),
+    ]
+)
