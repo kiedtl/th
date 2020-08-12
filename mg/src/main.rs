@@ -25,7 +25,7 @@ enum MapgenAlgorithm {
 struct LayerSpecification {
     levels: usize,
     dimensions: (usize, usize),   // (width, height)
-    algorithm: MapgenAlgorithm,
+    algorithms: Vec<MapgenAlgorithm>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -66,20 +66,23 @@ fn main() {
         for _level in 0..layer.levels {
             let mut map = DungeonS1::new(layer.dimensions.0,
                 layer.dimensions.1);
-            match &layer.algorithm {
-                MapgenAlgorithm::Drunkard(d) => {
-                    Drunkard::new(&mut map, &mut rng, *d)
-                        .walk();
-                },
-                MapgenAlgorithm::Cellular(c) => {
-                    CellularAutomata::new(&mut map, &mut rng, c.clone())
-                        .do_work();
-                },
-                MapgenAlgorithm::RandomRooms(r) => {
-                    RandomRooms::new(&mut map, &mut rng, *r)
-                        .tunnel();
-                },
+            for algorithm in &layer.algorithms {
+                match &algorithm {
+                    MapgenAlgorithm::Drunkard(d) => {
+                        Drunkard::new(&mut map, &mut rng, *d)
+                            .walk();
+                    },
+                    MapgenAlgorithm::Cellular(c) => {
+                        CellularAutomata::new(&mut map, &mut rng, c.clone())
+                            .do_work();
+                    },
+                    MapgenAlgorithm::RandomRooms(r) => {
+                        RandomRooms::new(&mut map, &mut rng, *r)
+                            .tunnel();
+                    },
+                }
             }
+
             display(&map);
             dungeons_s1.push(map);
         }
