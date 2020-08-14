@@ -24,6 +24,7 @@ impl RandomRoomsOptions {
     pub fn new() -> RandomRoomsOptions {
         RandomRoomsOptions {
             max_rooms: None,
+            max_tunnels: None,
             room_max_width: 16,
             room_max_height: 8,
             room_min_width: 4,
