@@ -4,24 +4,23 @@ DungeonSpecification(
     layers: [
         LayerSpecification(
             levels: 1,
-            dimensions: (200, 50),
+            dimensions: (129, 33),
             algorithms: [
                 RandomRooms(
                     RandomRoomsOptions(
-                        max_rooms: None,
-                        room_max_width: 24,
-                        room_max_height: 12,
+                        max_rooms: Some(150),
+                        max_tunnels: Some(0),
+                        room_max_width: 12,
+                        room_max_height: 6,
                         room_min_width: 4,
                         room_min_height: 2,
                     )
                 ),
 
-                Drunkard(
-                    DrunkardOptions(
-                        center_weight: 0.1,
-                        previous_direction_weight: 0.65,
-                        max_iterations: 5000,
-                        filled_goal: 0.25,
+                Maze(
+                    MazeOptions(
+                        remove_dead_ends: Some(3),
+                        connect_to_features: true,
                     ),
                 ),
             ]

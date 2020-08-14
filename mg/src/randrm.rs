@@ -4,6 +4,7 @@
 // overlapping tunnels later.
 
 use crate::rect::*;
+use crate::features::*;
 use crate::dun_s1::*;
 use std::vec::Vec;
 use std::cmp::{min, max};
@@ -113,7 +114,8 @@ impl <'a, R: Rng> RandomRooms<'a, R> {
                     && !does_intersect(&new_room, &tunnels) {
                 self.create_room(&new_room);
 
-                rooms.push(new_room);
+                rooms.push(new_room.clone());
+                self.map.features.push(Feature::Room(new_room));
                 num_rooms += 1;
             }
         }
@@ -172,6 +174,9 @@ impl <'a, R: Rng> RandomRooms<'a, R> {
             // draw the rooms
             self.create_room(&tun1); tunnels.push(tun1.clone());
             self.create_room(&tun2); tunnels.push(tun2.clone());
+
+            self.map.features.push(Feature::Tunnel(tun1));
+            self.map.features.push(Feature::Tunnel(tun2));
         }
     }
 

@@ -2,6 +2,7 @@ mod dirs;
 mod drunk;
 mod dun_s1;
 mod maze;
+mod features;
 mod cellular;
 mod randrm;
 mod rect;
@@ -14,7 +15,6 @@ use crate::randrm::*;
 
 use serde::Deserialize;
 use std::fs::File;
-use rand::prelude::*;
 use ron::de::from_reader;
 
 #[derive(Debug, Deserialize)]
@@ -22,6 +22,7 @@ enum MapgenAlgorithm {
     Drunkard(DrunkardOptions),
     Cellular(CellularAutomataOptions),
     RandomRooms(RandomRoomsOptions),
+    Maze(MazeOptions),
 }
 
 #[derive(Debug, Deserialize)]
@@ -39,14 +40,6 @@ struct DungeonSpecification {
 fn main() {
     let mut rng = rand::thread_rng();
     let mut dungeons_s1: Vec<DungeonS1> = Vec::new();
-
-    let mut map = DungeonS1::new(100, 50);
-    Maze::new(&mut map, &mut rng, MazeOptions::new())
-        .create();
-
-    display(&map);
-    dungeons_s1.push(map);
-    return;
 
     let args = std::env::args().collect::<Vec<String>>();
     if args.len() < 2 {
@@ -91,6 +84,10 @@ fn main() {
                         RandomRooms::new(&mut map, &mut rng, *r)
                             .tunnel();
                     },
+                    MapgenAlgorithm::Maze(m) => {
+                        Maze::new(&mut map, &mut rng, *m)
+                            .create();
+                    },
                 }
             }
 
@@ -104,8 +101,9 @@ fn display(map: &DungeonS1) {
     for y in 0..map.height {
         for x in 0..map.width {
             match map.d[y][x] {
-                TileType::Floor => print!(" "), //"·"),
-                TileType::Wall  => print!("▒"),
+                TileType::Wall   => print!(" "), //"·"),
+                TileType::Debug  => print!("░"),
+                TileType::Floor  => print!("▒"),
                 //TileType::Wall  => print!("#"),
                 //TileType::Floor => print!("."),
             }

@@ -1,10 +1,12 @@
 use std::vec::Vec;
+use crate::features::*;
 use rand::prelude::*;
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum TileType {
     // TODO: ditch
     Wall, Floor,
+    Debug,
 }
 
 // a DungeonS1 ("Dungeon Stage 1") is a dungeon
@@ -14,6 +16,7 @@ pub enum TileType {
 pub struct DungeonS1 {
     pub d: Vec<Vec<TileType>>,
     pub width: usize, pub height: usize,
+    pub features: Vec<Feature>,
 }
 
 impl DungeonS1 {
@@ -26,6 +29,7 @@ impl DungeonS1 {
         DungeonS1 {
             d: dungeon,
             width: width, height: height,
+            features: Vec::new(),
         }
     }
 

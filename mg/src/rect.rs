@@ -17,7 +17,7 @@ impl Rect {
     pub fn intersects(&self, other: &Rect, padding: usize) -> bool {
         self.x1.saturating_sub(padding) < other.x2 &&
             self.x2.saturating_add(padding) > other.x1 &&
-         self.y1.saturating_sub(padding) < other.y2 &&
+        self.y1.saturating_sub(padding) < other.y2 &&
             self.y2.saturating_add(padding) > other.y1
     }
 
@@ -70,22 +70,22 @@ impl Rect {
         match direction {
             dirs::Direction::North => {
                 for x in self.x1..self.x2 {
-                    coords.push((self.y1.saturating_add(1), x));
+                    coords.push((self.y1.saturating_sub(2), x));
                 }
             },
             dirs::Direction::South => {
                 for x in self.x1..self.x2 {
-                    coords.push((self.y2.saturating_sub(1), x));
+                    coords.push((self.y2.saturating_sub(0), x));
                 }
             },
             dirs::Direction::East  => {
                 for y in self.y1..self.y2 {
-                    coords.push((y, self.x2.saturating_add(1)));
+                    coords.push((y, self.x2.saturating_add(0)));
                 }
             },
             dirs::Direction::West  => {
                 for y in self.y1..self.y2 {
-                    coords.push((y, self.x2.saturating_sub(1)));
+                    coords.push((y, self.x1.saturating_sub(2)));
                 }
             },
 
