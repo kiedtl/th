@@ -104,8 +104,8 @@ impl <'a, R: Rng> RandomRooms<'a, R> {
             let h = self.rng.gen_range(self.options.room_min_height, self.options.room_max_height);
 
             // random position within map boundaries
-            let x = self.rng.gen_range(1, self.map.width  - w - 2);
-            let y = self.rng.gen_range(1, self.map.height - h - 2);
+            let x = self.rng.gen_range(2, self.map.width  - w - 2);
+            let y = self.rng.gen_range(2, self.map.height - h - 2);
 
             let new_room = Rect::new(x, y, x + w, y + h);
 
