@@ -101,9 +101,9 @@ fn display(map: &DungeonS1) {
     for y in 0..map.height {
         for x in 0..map.width {
             match map.d[y][x] {
-                TileType::Wall   => print!(" "), //"·"),
+                TileType::Wall   => print!("▒"), //"·"),
                 TileType::Debug  => print!("░"),
-                TileType::Floor  => print!("▒"),
+                TileType::Floor  => print!(" "),
                 //TileType::Wall  => print!("#"),
                 //TileType::Floor => print!("."),
             }
