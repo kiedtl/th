@@ -13,6 +13,7 @@ use serde::Deserialize;
 #[derive(Copy, Clone, Debug, Deserialize)]
 pub struct RandomRoomsOptions {
     max_rooms: Option<usize>,
+    max_tunnels: Option<usize>,
     room_max_width: usize,
     room_max_height: usize,
     room_min_width: usize,
@@ -126,6 +127,15 @@ impl <'a, R: Rng> RandomRooms<'a, R> {
         // all rooms after the first room connect
         // to another previously-created room
         for r in 1..num_rooms {
+            match self.options.max_tunnels {
+                Some(n) => {
+                    if r > n {
+                        break;
+                    }
+                },
+                None => (),
+            }
+
             let (new_x, new_y) = closest_rooms[r].center();
 
             let other = r - 1;
