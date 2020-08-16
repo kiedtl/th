@@ -14,3 +14,9 @@ rand = "^0.7.0"
 # info file
 serde = "^1.0.0"
 ron = "^0.6.0"
+
+# Perlin/OpenSimplex noise generator used for
+# making clusters/"veins" of minerals
+[dependencies.noise]
+version = "0.6.0"
+default-features = false
