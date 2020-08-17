@@ -4,22 +4,23 @@ DungeonSpecification(
     layers: [
         LayerSpecification(
             levels: 1,
-            dimensions: (129, 33),
+            dimensions: (90, 45),
             algorithms: [
                 RandomRooms(
                     RandomRoomsOptions(
-                        max_rooms: Some(150),
+                        max_rooms: Some(100000),
                         max_tunnels: Some(0),
-                        room_max_width: 12,
-                        room_max_height: 6,
+                        room_max_width: 30,
+                        room_max_height: 15,
                         room_min_width: 4,
                         room_min_height: 2,
+                        room_border: 2,
                     )
                 ),
 
                 Maze(
                     MazeOptions(
-                        remove_dead_ends: Some(3),
+                        remove_dead_ends: Some(0),
                         connect_to_features: true,
                     ),
                 ),

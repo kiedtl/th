@@ -19,6 +19,7 @@ pub struct RandomRoomsOptions {
     room_max_height: usize,
     room_min_width: usize,
     room_min_height: usize,
+    room_border: usize,
 }
 
 impl RandomRoomsOptions {
@@ -30,6 +31,7 @@ impl RandomRoomsOptions {
             room_max_height: 8,
             room_min_width: 4,
             room_min_height: 2,
+            room_border: 4,
         }
     }
 
@@ -55,6 +57,11 @@ impl RandomRoomsOptions {
 
     pub fn room_min_height(mut self, value: usize) -> RandomRoomsOptions {
         self.room_min_height = value;
+        self
+    }
+
+    pub fn room_border(mut self, value: usize) -> RandomRoomsOptions {
+        self.room_border = value;
         self
     }
 }
@@ -89,9 +96,9 @@ impl <'a, R: Rng> RandomRooms<'a, R> {
         let mut num_rooms = 0;
 
         let does_intersect =
-            |r: &Rect, group: &Vec<Rect>| {
+            |r: &Rect, group: &Vec<Rect>, bdr: usize| {
                 for hovel in group {
-                    if r.intersects(hovel, 4) {
+                    if r.intersects(hovel, bdr) {
                         return true;
                     }
                 }
@@ -110,8 +117,8 @@ impl <'a, R: Rng> RandomRooms<'a, R> {
             let new_room = Rect::new(x, y, x + w, y + h);
 
             // check for overlap
-            if !does_intersect(&new_room, &rooms)
-                    && !does_intersect(&new_room, &tunnels) {
+            if !does_intersect(&new_room, &rooms, self.options.room_border)
+                    && !does_intersect(&new_room, &tunnels, self.options.room_border) {
                 self.create_room(&new_room);
 
                 rooms.push(new_room.clone());
