@@ -76,9 +76,6 @@ fn main() {
             }
     }
 
-    println!("{:?}", materials);
-    return;
-
     // try to load configuration
     let input_path = &args[1];
     let fconf = match File::open(input_path) {
