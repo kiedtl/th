@@ -1,0 +1,24 @@
+MaterialInfo(
+	name: "basalt",
+	description: "a rather common, dark rock originating from the magma flows that once filled the earth",
+	class: Stone(
+		StoneInfo(
+			stone_type: IgneousExtrusive,
+			found_near: [],
+		),
+	),
+	rarity: 1,
+	density: 2.9,
+	color: Color(
+		red: 41, blue: 39,
+		green: 40, alpha: 0,
+	),
+	melting_point: 1257.15,
+	combustible: None,
+	smelt_result: None,
+	hardness: 6.1,
+	specific_heat: 0.84,
+	emit_light: 0,
+	occurs_naturally: Some([Block]),
+	edible: false,
+)
