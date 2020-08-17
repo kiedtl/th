@@ -8,7 +8,7 @@ DungeonSpecification(
             algorithms: [
                 RandomRooms(
                     RandomRoomsOptions(
-                        max_rooms: Some(100000),
+                        max_rooms: Some(100),
                         max_tunnels: Some(0),
                         room_max_width: 30,
                         room_max_height: 15,
