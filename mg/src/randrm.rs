@@ -23,6 +23,7 @@ pub struct RandomRoomsOptions {
 }
 
 impl RandomRoomsOptions {
+    #[allow(dead_code)]
     pub fn new() -> RandomRoomsOptions {
         RandomRoomsOptions {
             max_rooms: None,
@@ -35,31 +36,37 @@ impl RandomRoomsOptions {
         }
     }
 
+    #[allow(dead_code)]
     pub fn max_rooms(mut self, value: usize) -> RandomRoomsOptions {
         self.max_rooms = Some(value);
         self
     }
 
+    #[allow(dead_code)]
     pub fn room_max_width(mut self, value: usize) -> RandomRoomsOptions {
         self.room_max_width = value;
         self
     }
 
+    #[allow(dead_code)]
     pub fn room_max_height(mut self, value: usize) -> RandomRoomsOptions {
         self.room_max_height = value;
         self
     }
 
+    #[allow(dead_code)]
     pub fn room_min_width(mut self, value: usize) -> RandomRoomsOptions {
         self.room_min_width = value;
         self
     }
 
+    #[allow(dead_code)]
     pub fn room_min_height(mut self, value: usize) -> RandomRoomsOptions {
         self.room_min_height = value;
         self
     }
 
+    #[allow(dead_code)]
     pub fn room_border(mut self, value: usize) -> RandomRoomsOptions {
         self.room_border = value;
         self

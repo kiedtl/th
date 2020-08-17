@@ -12,6 +12,7 @@ pub struct DrunkardOptions {
 }
 
 impl DrunkardOptions {
+    #[allow(dead_code)]
     pub fn new() -> DrunkardOptions {
         DrunkardOptions {
             max_iterations: 5000,
@@ -21,21 +22,25 @@ impl DrunkardOptions {
         }
     }
 
+    #[allow(dead_code)]
     pub fn max_iterations(mut self, iterations: usize) -> DrunkardOptions {
         self.max_iterations = iterations;
         self
     }
 
+    #[allow(dead_code)]
     pub fn center_weight(mut self, weight: f64) -> DrunkardOptions {
         self.center_weight = weight;
         self
     }
 
+    #[allow(dead_code)]
     pub fn previous_direction_weight(mut self, weight: f64) -> DrunkardOptions {
         self.previous_direction_weight = weight;
         self
     }
 
+    #[allow(dead_code)]
     pub fn filled_goal(mut self, goal: f64) -> DrunkardOptions {
         self.filled_goal = goal;
         self

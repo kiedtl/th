@@ -21,6 +21,7 @@ pub struct MazeOptions {
 }
 
 impl MazeOptions {
+    #[allow(dead_code)]
     pub fn new() -> MazeOptions {
         MazeOptions {
             remove_dead_ends: Some(1),
@@ -28,11 +29,13 @@ impl MazeOptions {
         }
     }
 
+    #[allow(dead_code)]
     pub fn remove_dead_ends(mut self, val: Option<usize>) -> MazeOptions {
         self.remove_dead_ends = val;
         self
     }
 
+    #[allow(dead_code)]
     pub fn connect_to_features(mut self, val: bool) -> MazeOptions {
         self.connect_to_features = val;
         self

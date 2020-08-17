@@ -20,6 +20,7 @@ pub struct CellularAutomataOptions {
 }
 
 impl CellularAutomataOptions {
+    #[allow(dead_code)]
     pub fn new() -> CellularAutomataOptions {
         CellularAutomataOptions {
             open_space_percentage: 64,
@@ -29,21 +30,25 @@ impl CellularAutomataOptions {
         }
     }
 
+    #[allow(dead_code)]
     pub fn schedule_job(mut self, job: JobType) -> CellularAutomataOptions {
         self.schedule.push(job);
         self
     }
 
+    #[allow(dead_code)]
     pub fn open_space_percentage(mut self, chance: usize) -> CellularAutomataOptions {
         self.open_space_percentage = chance;
         self
     }
 
+    #[allow(dead_code)]
     pub fn wall_requirement(mut self, requirement: usize) -> CellularAutomataOptions {
         self.wall_requirement = requirement;
         self
     }
 
+    #[allow(dead_code)]
     pub fn island_requirement(mut self, requirement: usize) -> CellularAutomataOptions {
         self.island_requirement = requirement;
         self
