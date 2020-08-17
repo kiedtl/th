@@ -3,7 +3,6 @@
 
 use serde::Deserialize;
 use rand::prelude::*;
-use crate::rect::*;
 use crate::dirs::*;
 use crate::features::*;
 use crate::dun_s1::*;
@@ -106,10 +105,11 @@ impl<R: Rng> Maze<'_, R> {
                     break;
                 }
 
-                let wall = f.wall(wall_side);
+                let mut wall = f.wall(wall_side);
 
                 // get number of coords that have at least
                 // two floors next to them
+                wall.shuffle(self.rng);
                 for coord in wall {
                     // TODO: create coord struct, with
                     // get_neighbors function
