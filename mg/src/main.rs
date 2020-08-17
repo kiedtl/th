@@ -2,22 +2,25 @@ mod dirs;
 mod drunk;
 mod dun_s1;
 mod maze;
+mod colors;
+mod material;
 mod features;
 mod cellular;
 mod randrm;
 mod rect;
+mod items;
 
 use crate::drunk::*;
 use crate::dun_s1::*;
 use crate::maze::*;
 use crate::cellular::*;
+use crate::material::*;
 use crate::randrm::*;
 
 use serde::Deserialize;
-use std::fs::File;
+use std::{fs, fs::File};
 use ron::de::from_reader;
-use noise::{Abs, Perlin, OpenSimplex, NoiseFn, Seedable, BasicMulti, Billow, Fbm, HybridMulti, RidgedMulti, Checkerboard, Constant, Cylinders, SuperSimplex, Value, Worley};
-use rand::prelude::*;
+use walkdir::WalkDir;
 
 #[derive(Debug, Deserialize)]
 enum MapgenAlgorithm {
@@ -41,37 +44,10 @@ struct DungeonSpecification {
 
 fn main() {
     let mut rng = rand::thread_rng();
+    let mut materials: Vec<MaterialInfo> = Vec::new();
     let mut dungeons_s1: Vec<DungeonS1> = Vec::new();
 
-    // OpenSimplex/BasicMulti/Fbm/HybridMulti
-    // OpenSimplex
-    // Cylinders for morgoth's lair
-    // Value -- chunks/islands of high-value minerals
-    let os = Perlin::new().set_seed(rng.gen());
-    let mut map = DungeonS1::new(638, 153); //250, 64);
-    for y in 0..(map.height - 1) {
-        for x in 0..(map.width - 1) {
-            //map.d[y][x] = 
-            let nx: f64 = (x as f64) / (map.width as f64)  - 0.5;
-            let ny: f64 = (y as f64) / (map.height as f64) - 0.5;
-
-            let mut noise =   1.0 * os.get([ 1.0 * ny,  1.0 * nx])
-                          +   0.5 * os.get([ 2.0 * ny,  2.0 * nx])
-                          +  0.25 * os.get([ 4.0 * ny,  4.0 * nx])
-                          + 0.125 * os.get([ 8.0 * ny,  8.0 * nx])
-                          + 0.062 * os.get([16.0 * ny, 16.0 * nx])
-                          + 0.031 * os.get([32.0 * ny, 32.0 * nx]);
-            let color: u8 = (noise.abs().powf(4.12) * 255.0) as u8;
-
-            //println!("{},{}", x, color);
-            print!("{}[48;2;{};{};{}m {}[m", 0x1b as char, color, color, color, 0x1b as char);
-        }
-
-        println!("");
-    }
-
-    return; // DEBUG
-
+    // check arguments
     let args = std::env::args().collect::<Vec<String>>();
     if args.len() < 2 {
         eprintln!("{}: need DungeonSpecification file.", args[0]);
@@ -79,22 +55,47 @@ fn main() {
         std::process::exit(1);
     }
 
+    // load and parse material info files
+    // TODO: do not hardcode paths
+    for entry in WalkDir::new("../dat/mats/")
+        .follow_links(true)
+        .into_iter()
+        .filter_map(|e| e.ok()) {
+            if fs::metadata(entry.path()).unwrap().is_dir() {
+                continue;
+            }
+
+            let info_file = File::open(entry.path())
+                .unwrap();
+            match from_reader(info_file) {
+                Ok(x) => materials.push(x),
+                Err(e) => {
+                    eprintln!("{}: failed to load info file: {}: {}",
+                        args[0], entry.path().display(), e);
+                },
+            }
+    }
+
+    println!("{:?}", materials);
+    return;
+
+    // try to load configuration
     let input_path = &args[1];
-    let fconf;
-    match File::open(input_path) {
-        Ok(f) => fconf = f,
+    let fconf = match File::open(input_path) {
+        Ok(f) => f,
         Err(e) => {
             println!("{}: \"{}\": {}", args[0], input_path, e);
             std::process::exit(1);
         },
-    }
+    };
 
+    // parse configuration
     let config: DungeonSpecification = match from_reader(fconf) {
         Ok(x) => x,
         Err(e) => {
-            println!("Failed to load config: {}", e);
+            println!("{}: failed to load config: {}", args[0], e);
             std::process::exit(1);
-        }
+        },
     };
 
     for layer in &config.layers {

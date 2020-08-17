@@ -8,12 +8,16 @@ edition = "2018"
 
 # random number generation,
 # used heavily during map generation
-rand = "^0.7.0"
+rand = "0.7.0"
 
 # used for parsing the dungeon
 # info file
-serde = "^1.0.0"
-ron = "^0.6.0"
+serde = "1.0.0"
+ron = "0.6.0"
+
+# used to traverse data directories and get
+# item definitions
+walkdir = "2"
 
 # Perlin/OpenSimplex noise generator used for
 # making clusters/"veins" of minerals
