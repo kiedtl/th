@@ -1,0 +1,24 @@
+MaterialInfo(
+	name: "hematite",
+	description: "a dark red-gray rock valued for its high iron content",
+	class: Stone(
+		StoneInfo(
+			stone_type: Sedimentary,
+			found_near: [],
+		),
+	),
+	rarity: 50,
+	density: 5.3,
+	color: Color(
+		red: 81, blue: 59,
+		green: 59, alpha: 0,
+	),
+	melting_point: 1838.15,
+	combustible: None,
+	smelt_result: Some("iron"),
+	hardness: 6.5,
+	specific_heat: 3.25,
+	emit_light: 0,
+	occurs_naturally: Some([Block]),
+	edible: false,
+)
