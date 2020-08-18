@@ -17,7 +17,7 @@ MaterialInfo(
 	combustible: None,
 	smelt_result: Some("iron"),
 	hardness: 6.5,
-	specific_heat: 3.25,
+	specific_heat: 3.25, // NOT ACCURATE
 	emit_light: 0,
 	occurs_naturally: Some([Block]),
 	edible: false,
