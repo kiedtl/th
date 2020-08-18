@@ -6,6 +6,7 @@ use serde::Deserialize;
 pub enum StoneType {
     Sedimentary,
     IgneousExtrusive,
+    IgneousIntrusive,
     Metamorphic,
 }
 
