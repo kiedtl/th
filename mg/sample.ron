@@ -8,7 +8,7 @@ DungeonSpecification(
             algorithms: [
                 RandomRooms(
                     RandomRoomsOptions(
-                        max_rooms: Some(100),
+                        max_rooms: None,
                         max_tunnels: Some(0),
                         room_max_width: 30,
                         room_max_height: 15,
@@ -20,7 +20,7 @@ DungeonSpecification(
 
                 Maze(
                     MazeOptions(
-                        remove_dead_ends: Some(0),
+                        remove_dead_ends: Some(2),
                         connect_to_features: true,
                     ),
                 ),
