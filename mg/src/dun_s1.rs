@@ -2,7 +2,7 @@ use std::vec::Vec;
 use crate::features::*;
 use rand::prelude::*;
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub enum TileType {
     // TODO: ditch
     Wall, Floor,

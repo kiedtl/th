@@ -1,16 +1,21 @@
 use std::vec::Vec;
-use crate::materials::*;
+use crate::material::*;
+use crate::features::*;
+use crate::items::*;
+use std::collections::HashMap;
+use crate::colors::*;
 use rand::prelude::*;
 use crate::dun_s1::*;
+use noise::{NoiseFn, Seedable};
 
 #[derive(Clone, Debug)]
 pub struct DungeonTile {
-    tiletype: TileType,
-    tile_material: &Material,
+    pub tiletype: TileType,
+    pub tile_material: MaterialInfo,
 
     // TODO: define Mob, Item structs
-    items: Vec<u8>,
-    mobs: Vec<u8>,
+    pub items: Vec<u8>,
+    pub mobs: Vec<u8>,
 }
 
 // a DungeonS2 ("Dungeon Stage 2") has all
@@ -18,9 +23,9 @@ pub struct DungeonTile {
 // including items, mobs, material, etc
 #[derive(Clone, Debug)]
 pub struct DungeonS2 {
-    d: Vec<Vec<DungeonTile>>,
-    width: usize, height: usize,
-    features: Vec<Feature>,
+    pub d: Vec<Vec<DungeonTile>>,
+    pub width: usize, pub height: usize,
+    pub features: Vec<Feature>,
 }
 
 impl DungeonS2 {
@@ -43,14 +48,14 @@ impl DungeonS2 {
         };
 
         let mut dungeon: Vec<Vec<DungeonTile>> = Vec::new();
-        for y in 0..(dg.height - 1) {
+        for y in 0..dg.height {
             let mut row = Vec::new();
-            for x in 0..(dg.width - 1) {
+            for x in 0..dg.width {
                 let tile = DungeonTile {
                     tiletype: dg.d[y][x],
-                    tile_material: default_material,
+                    tile_material: default_material.clone(),
                     items: vec![], mobs: vec![],
-                }
+                };
 
                 row.push(tile);
             }
@@ -61,10 +66,44 @@ impl DungeonS2 {
         DungeonS2 {
             d: dungeon,
             width: dg.width, height: dg.height,
-            features: dg.features,
+            features: dg.features.clone(),
         }
     }
 
-    pub fn decide_materials(&mut self, materials: Vec<Materials>, noise_algo: String) {
+    pub fn decide_materials<N>(&mut self, materials: Vec<MaterialInfo>, noise: N)
+    where
+        N: NoiseFn<[f64; 2]> + Seedable,
+    {
+        let exponent = 4.12;
+
+        let mut mats: HashMap<usize, Vec<MaterialInfo>> = HashMap::new();
+        materials.iter().for_each(|i| {
+            if !mats.contains_key(&(i.rarity as usize)) {
+                mats.entry(i.rarity as usize).or_insert(Vec::new());
+            }
+
+            mats.get_mut(&(i.rarity as usize)).unwrap().push(i.clone());
+        });
+
+        for y in 0..self.height {
+            for x in 0..self.width {
+                let nx: f64 = (x as f64) / (self.width as f64)  - 0.5;
+                let ny: f64 = (y as f64) / (self.height as f64) - 0.5;
+
+                let noise =   1.0 * noise.get([ 1.0 * ny,  1.0 * nx])
+                          +   0.5 * noise.get([ 2.0 * ny,  2.0 * nx])
+                          +  0.25 * noise.get([ 4.0 * ny,  4.0 * nx])
+                          + 0.125 * noise.get([ 8.0 * ny,  8.0 * nx])
+                          + 0.062 * noise.get([16.0 * ny, 16.0 * nx])
+                          + 0.031 * noise.get([32.0 * ny, 32.0 * nx]);
+                let mut value = ((noise.abs().powf(exponent)) * 255.0) as usize;
+
+                while !mats.contains_key(&value) {
+                    value = value.saturating_sub(1);
+                }
+
+                self.d[y][x].tile_material = mats[&value][0].clone();
+            }
+        }
     }
 }

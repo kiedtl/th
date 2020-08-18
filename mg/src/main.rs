@@ -1,6 +1,7 @@
 mod dirs;
 mod drunk;
 mod dun_s1;
+mod dun_s2;
 mod maze;
 mod colors;
 mod material;
@@ -12,12 +13,15 @@ mod items;
 
 use crate::drunk::*;
 use crate::dun_s1::*;
+use crate::dun_s2::*;
 use crate::maze::*;
 use crate::cellular::*;
 use crate::material::*;
 use crate::randrm::*;
 
+use rand::prelude::*;
 use serde::Deserialize;
+use noise::{BasicMulti, Seedable};
 use std::{fs, fs::File};
 use ron::de::from_reader;
 use walkdir::WalkDir;
@@ -120,23 +124,38 @@ fn main() {
                 }
             }
 
-            display(&map);
             dungeons_s1.push(map);
         }
     }
+
+    let mut dungeons_s2: Vec<DungeonS2> = Vec::new();
+    dungeons_s1.iter().for_each(|d| {
+        let mut new_d = DungeonS2::from_dungeon_s1(d);
+        new_d.decide_materials(materials.clone(),
+            BasicMulti::new().set_seed(rng.gen()));
+        dungeons_s2.push(new_d);
+    });
+
+    for d in dungeons_s2 {
+        display(&d);
+    }
 }
 
-fn display(map: &DungeonS1) {
-    for y in 0..map.height {
-        for x in 0..map.width {
-            match map.d[y][x] {
-                TileType::Wall   => print!("▒"), //"·"),
-                TileType::Debug  => print!("░"),
-                TileType::Floor  => print!(" "),
-                //TileType::Wall  => print!("#"),
-                //TileType::Floor => print!("."),
+fn display(map: &DungeonS2) {
+    for y in 0..(map.height) {
+        for x in 0..(map.width) {
+            let color = map.d[y][x].tile_material.color;
+            let character: char;
+
+            match map.d[y][x].tiletype {
+                TileType::Wall  => character = '▒',
+                TileType::Debug => character = '░',
+                TileType::Floor => character = '+',
             }
+
+            print!("{}[38;2;{};{};{}m{}", 0x1b as char, color.red,
+                color.green, color.blue, character);
         }
-        print!("\n");
+        print!("\n{}[m", 0x1b as char);
     }
 }
