@@ -1,0 +1,29 @@
+MaterialInfo(
+	name: "diorite",
+	description: "", // TODO
+	class: Stone(
+		StoneInfo(
+			stone_type: IgneousIntrusive,
+			found_near: [], // TODO
+		),
+	),
+	rarity: 35,
+	density: 2.72,
+	color_bg: Color(
+		red: 150, blue: 150,
+		green: 150, alpha: 0,
+	),
+	color_fg: Color(
+		red: 128, blue: 128,
+		green: 128, alpha: 0,
+	),
+	block_glyph: '▒',
+	melting_point: 1473.15,
+	combustible: None,
+	smelt_result: None,
+	hardness: 6.5,
+	specific_heat: 1, // NOT ACCURATE
+	emit_light: 0,
+	occurs_naturally: Some([Block]),
+	edible: false,
+)
