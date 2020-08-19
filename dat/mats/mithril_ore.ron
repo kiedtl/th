@@ -1,0 +1,30 @@
+// NOTE: this mineral is entirely fictional.
+MaterialInfo(
+	name: "mithril ore",
+	description: "Crystalized metallic hydrogen with miniscule amounts of titanium. Prized for it's strength and durability.", // TODO: speeling
+	class: Stone(
+		StoneInfo(
+			stone_type: Metamorphic,
+			found_near: [], // TODO
+		),
+	),
+	rarity: 255,
+	density: 2.4,
+	color_bg: Color(
+		red: 220, blue: 220,
+		green: 220, alpha: 0,
+	),
+	color_fg: Color(
+		red: 10, blue: 64,
+		green: 10, alpha: 0,
+	),
+	block_glyph: '▒',
+	melting_point: 3198.219,
+	combustible: None,
+	smelt_result: None,
+	hardness: 3.9,
+	specific_heat: 2.731,
+	emit_light: 0,
+	occurs_naturally: Some([Block]),
+	edible: false,
+)
