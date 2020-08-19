@@ -1,0 +1,29 @@
+MaterialInfo(
+	name: "rhyolite",
+	description: "", // TODO
+	class: Stone(
+		StoneInfo(
+			stone_type: IgneousExtrusive,
+			found_near: [], // TODO
+		),
+	),
+	rarity: 0,
+	density: 2.4,
+	color_bg: Color(
+		red: 64, blue: 64,
+		green: 64, alpha: 0,
+	),
+	color_fg: Color(
+		red: 128, blue: 128,
+		green: 128, alpha: 0,
+	),
+	block_glyph: ',',
+	melting_point: 923.15,
+	combustible: None,
+	smelt_result: None,
+	hardness: 6.7,
+	specific_heat: 1, // NOT ACCURATE
+	emit_light: 0,
+	occurs_naturally: Some([Block]),
+	edible: false,
+)
