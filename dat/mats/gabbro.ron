@@ -1,0 +1,29 @@
+MaterialInfo(
+	name: "gabbro",
+	description: "", // TODO
+	class: Stone(
+		StoneInfo(
+			stone_type: IgneousIntrusive,
+			found_near: [], // TODO
+		),
+	),
+	rarity: 23,
+	density: 3.10,
+	color_bg: Color(
+		red: 32, blue: 32,
+		green: 32, alpha: 0,
+	),
+	color_fg: Color(
+		red: 128, blue: 128,
+		green: 128, alpha: 0,
+	),
+	block_glyph: '▒',
+	melting_point: 1163.15,
+	combustible: None,
+	smelt_result: None,
+	hardness: 7,
+	specific_heat: 1, // NOT ACCURATE
+	emit_light: 0,
+	occurs_naturally: Some([Block]),
+	edible: false,
+)
