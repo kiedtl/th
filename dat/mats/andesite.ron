@@ -1,0 +1,29 @@
+MaterialInfo(
+	name: "andesite",
+	description: "", // TODO
+	class: Stone(
+		StoneInfo(
+			stone_type: IgneousExtrusive,
+			found_near: [], // TODO
+		),
+	),
+	rarity: 10,
+	density: 2.60,
+	color_bg: Color(
+		red: 210, blue: 210,
+		green: 210, alpha: 0,
+	),
+	color_fg: Color(
+		red: 64, blue: 64,
+		green: 64, alpha: 0,
+	),
+	block_glyph: '∞',
+	melting_point: 1543.15,
+	combustible: None,
+	smelt_result: None,
+	hardness: 7,
+	specific_heat: 1, // NOT ACCURATE
+	emit_light: 0,
+	occurs_naturally: Some([Block]),
+	edible: false,
+)
