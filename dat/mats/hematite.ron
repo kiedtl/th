@@ -9,10 +9,15 @@ MaterialInfo(
 	),
 	rarity: 50,
 	density: 5.3,
-	color: Color(
-		red: 81, blue: 59,
-		green: 59, alpha: 0,
+	color_bg: Color(
+		red: 210, blue: 210,
+		green: 210, alpha: 0,
 	),
+	color_fg: Color(
+		red: 128, blue: 32,
+		green: 32, alpha: 0,
+	),
+	block_glyph: '£',
 	melting_point: 1838.15,
 	combustible: None,
 	smelt_result: Some("iron"),

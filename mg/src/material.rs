@@ -52,7 +52,9 @@ pub struct MaterialInfo {
 
     // color in RGBA. alpha value determines
     // transparency of material
-    pub color: Color,
+    pub color_bg: Color,
+    pub color_fg: Color,
+    pub block_glyph: char,
 
     // all temperatures are in kelvin
     pub melting_point: f64,

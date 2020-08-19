@@ -9,10 +9,15 @@ MaterialInfo(
 	),
 	rarity: 0,
 	density: 2.9,
-	color: Color(
-		red: 71, blue: 69,
-		green: 70, alpha: 0,
+	color_bg: Color(
+		red: 158, blue: 158,
+		green: 158, alpha: 0,
 	),
+	color_fg: Color(
+		red: 80, blue: 80,
+		green: 80, alpha: 0,
+	),
+	block_glyph: '#',
 	melting_point: 1257.15,
 	combustible: None,
 	smelt_result: None,

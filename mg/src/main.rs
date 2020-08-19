@@ -144,17 +144,22 @@ fn main() {
 fn display(map: &DungeonS2) {
     for y in 0..(map.height) {
         for x in 0..(map.width) {
-            let color = map.d[y][x].tile_material.color;
-            let character: char;
+            let bg = map.d[y][x].tile_material.color_bg;
+            let fg = map.d[y][x].tile_material.color_fg;
 
             match map.d[y][x].tiletype {
-                TileType::Wall  => character = '▒',
-                TileType::Debug => character = '░',
-                TileType::Floor => character = '+',
+                TileType::Debug
+                | TileType::Wall  => {
+                    print!("{}[38;2;{};{};{}m{}[48;2;{};{};{}m{}{}[m",
+                        0x1b as char, fg.red, fg.green, fg.blue,
+                        0x1b as char, bg.red, bg.green, bg.blue,
+                        map.d[y][x].tile_material.block_glyph, 0x1b as char);
+                },
+                TileType::Floor => {
+                    print!("{}[38;2;{};{};{}m+",
+                        0x1b as char, fg.red, fg.green, fg.blue);
+                },
             }
-
-            print!("{}[38;2;{};{};{}m{}", 0x1b as char, color.red,
-                color.green, color.blue, character);
         }
         print!("\n{}[m", 0x1b as char);
     }
