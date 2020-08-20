@@ -1,16 +1,17 @@
+mod cellular;
+mod colors;
 mod dirs;
 mod drunk;
 mod dun_s1;
 mod dun_s2;
-mod maze;
-mod colors;
-mod material;
+mod dunspec;
 mod features;
-mod cellular;
+mod items;
+mod material;
+mod maze;
 mod randrm;
 mod rect;
-mod items;
-mod dunspec;
+mod utils;
 
 use crate::drunk::*;
 use crate::dunspec::*;
@@ -109,7 +110,7 @@ fn main() {
             // decide minerals
             let mut new_map = DungeonS2::from_dungeon_s1(&map);
             new_map.decide_materials(materials.clone(),
-                OpenSimplex::new().set_seed(rng.gen()), &layer);
+                OpenSimplex::new().set_seed(rng.gen()), &layer, &mut rng);
             dungeons_s1.push(map);
             dungeons_s2.push(new_map);
         }

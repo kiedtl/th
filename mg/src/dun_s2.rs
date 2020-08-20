@@ -4,7 +4,9 @@ use crate::dunspec::*;
 use crate::features::*;
 use crate::items::*;
 use crate::material::*;
+use crate::utils;
 use noise::{NoiseFn, Seedable};
+use rand::prelude::*;
 use std::collections::HashMap;
 use std::vec::Vec;
 
@@ -72,14 +74,21 @@ impl DungeonS2 {
         }
     }
 
-    pub fn decide_materials<N>(&mut self, materials: Vec<MaterialInfo>, noise: N, spec: &LayerSpecification)
+    // TODO: mineral_mapgen class/options struct
+    // in other words, move this thing into a separate file :p
+    pub fn decide_materials<N, R>(&mut self, materials: Vec<MaterialInfo>, noise: N,
+        spec: &LayerSpecification, rng: &mut R)
     where
+        R: Rng,
         N: NoiseFn<[f64; 2]> + Seedable,
     {
         // the exponent controls how often rare materials occur
         // on the map
+        // the larger the integer, the rarer the materials
+        // TODO: allow this to be controlled via fn arguments
         let exponent = 4.12;
 
+        // arrange materials into a hashmap by rarity value
         let mut mats: HashMap<usize, Vec<MaterialInfo>> = HashMap::new();
         for i in materials {
             // ignore non-stone materials
@@ -107,6 +116,7 @@ impl DungeonS2 {
                 mats.entry(i.rarity as usize).or_insert(Vec::new());
             }
 
+            // insert
             mats.get_mut(&(i.rarity as usize)).unwrap().push(i.clone());
         };
 
@@ -123,13 +133,42 @@ impl DungeonS2 {
                           + 0.125 * noise.get([ 8.0 * ny,  8.0 * nx])
                           + 0.062 * noise.get([16.0 * ny, 16.0 * nx])
                           + 0.031 * noise.get([32.0 * ny, 32.0 * nx]);
+                // the value may be negative, so abs() it
+                // multiply it by 255 to make it a value between 0..255
                 let mut value = ((noise.abs().powf(exponent)) * 255.0) as usize;
 
+                // if there's no material that has a rarity value equivalent
+                // to the noise value, lower the noise value
                 while !mats.contains_key(&value) {
                     value = value.saturating_sub(1);
                 }
 
-                self.d[y][x].tile_material = mats[&value][0].clone();
+                // get a list of all the materials that this coord's
+                // neighbors use
+                let neighboring_mats = utils::get_all_neighbors(self.width, self.height, x, y)
+                    .iter()
+                    .map(|(ny, nx)| self.d[*ny][*nx].tile_material.clone())
+                    .collect::<Vec<MaterialInfo>>();
+
+                // if there are more than one material for the rarity value
+                // then pick one based on what it's neighbors use
+                // for example if we need to choose between granite
+                // and basalt, and 5 neighbors use basalt but 3 use granite,
+                // then basalt should be more likely to be picked
+                self.d[y][x].tile_material = mats[&value].choose_weighted(rng, |m| {
+                    let mut probability = 1.0;
+                    for neighboring_mat in &neighboring_mats {
+                        if neighboring_mat == m {
+                            probability *= 2.5;
+                        } else {
+                            if score > 1.0 {
+                                probability -= 0.5;
+                            }
+                        }
+                    }
+
+                    probability as usize
+                }).unwrap().clone();
             }
         }
     }

@@ -10,27 +10,27 @@ pub enum StoneType {
     Metamorphic,
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq)]
 pub struct StoneInfo {
     pub stone_type: StoneType,
-    pub found_near: Vec<MaterialInfo>,
+    pub found_near: Vec<String>,
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq)]
 pub enum MaterialClass {
     Stone(StoneInfo), Metal,
     Flesh, Bone,
     Other,
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq)]
 pub struct MaterialBurnInfo {
     pub burning_point: f64,
     pub burn_rate: usize, // gram per second
     pub energy_per_gram: usize, // joules
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq)]
 pub struct MaterialInfo {
     // name of the material
     // e.g. "rhyolite"
