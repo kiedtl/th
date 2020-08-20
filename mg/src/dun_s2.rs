@@ -1,12 +1,12 @@
-use std::vec::Vec;
-use crate::material::*;
+use crate::colors::*;
+use crate::dun_s1::*;
+use crate::dunspec::*;
 use crate::features::*;
 use crate::items::*;
-use std::collections::HashMap;
-use crate::colors::*;
-use rand::prelude::*;
-use crate::dun_s1::*;
+use crate::material::*;
 use noise::{NoiseFn, Seedable};
+use std::collections::HashMap;
+use std::vec::Vec;
 
 #[derive(Clone, Debug)]
 pub struct DungeonTile {
@@ -72,21 +72,46 @@ impl DungeonS2 {
         }
     }
 
-    pub fn decide_materials<N>(&mut self, materials: Vec<MaterialInfo>, noise: N)
+    pub fn decide_materials<N>(&mut self, materials: Vec<MaterialInfo>, noise: N, spec: &LayerSpecification)
     where
         N: NoiseFn<[f64; 2]> + Seedable,
     {
+        // the exponent controls how often rare materials occur
+        // on the map
         let exponent = 4.12;
 
         let mut mats: HashMap<usize, Vec<MaterialInfo>> = HashMap::new();
-        materials.iter().for_each(|i| {
+        for i in materials {
+            // ignore non-stone materials
+            match &i.class {
+                MaterialClass::Stone(info) => {
+                    if info.stone_type != spec.stone_type {
+                        continue;
+                    }
+                },
+                _ => continue,
+            }
+
+            // ignore materials which don't occur naturally as
+            // blocks (that is, walls)
+            match &i.occurs_naturally {
+                Some(occurs) => {
+                    if !occurs.contains(&ItemType::Block) {
+                        continue;
+                    }
+                },
+                None => continue,
+            }
+
             if !mats.contains_key(&(i.rarity as usize)) {
                 mats.entry(i.rarity as usize).or_insert(Vec::new());
             }
 
             mats.get_mut(&(i.rarity as usize)).unwrap().push(i.clone());
-        });
+        };
 
+        // iterate throughout map, choosig materials based on the noise
+        // value
         for y in 0..self.height {
             for x in 0..self.width {
                 let nx: f64 = (x as f64) / (self.width as f64)  - 0.5;

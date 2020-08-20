@@ -2,7 +2,7 @@ use crate::colors::*;
 use crate::items::*;
 use serde::Deserialize;
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Copy, Clone, Debug, Deserialize, PartialEq)]
 pub enum StoneType {
     Sedimentary,
     IgneousExtrusive,

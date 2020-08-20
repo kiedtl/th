@@ -4,7 +4,7 @@ DungeonSpecification(
     layers: [
         LayerSpecification(
             levels: 1,
-            dimensions: (90, 45),
+            dimensions: (125, 20),
             algorithms: [
                 RandomRooms(
                     RandomRoomsOptions(
@@ -24,7 +24,9 @@ DungeonSpecification(
                         connect_to_features: true,
                     ),
                 ),
-            ]
+            ],
+
+            stone_type: IgneousExtrusive,
         ),
     ]
 )

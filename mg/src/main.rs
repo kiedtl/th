@@ -10,8 +10,10 @@ mod cellular;
 mod randrm;
 mod rect;
 mod items;
+mod dunspec;
 
 use crate::drunk::*;
+use crate::dunspec::*;
 use crate::dun_s1::*;
 use crate::dun_s2::*;
 use crate::maze::*;
@@ -20,36 +22,16 @@ use crate::material::*;
 use crate::randrm::*;
 
 use rand::prelude::*;
-use serde::Deserialize;
-use noise::{BasicMulti, Seedable};
+use noise::{OpenSimplex, Seedable};
 use std::{fs, fs::File};
 use ron::de::from_reader;
 use walkdir::WalkDir;
 
-#[derive(Debug, Deserialize)]
-enum MapgenAlgorithm {
-    Drunkard(DrunkardOptions),
-    Cellular(CellularAutomataOptions),
-    RandomRooms(RandomRoomsOptions),
-    Maze(MazeOptions),
-}
-
-#[derive(Debug, Deserialize)]
-struct LayerSpecification {
-    levels: usize,
-    dimensions: (usize, usize),   // (width, height)
-    algorithms: Vec<MapgenAlgorithm>,
-}
-
-#[derive(Debug, Deserialize)]
-struct DungeonSpecification {
-    layers: Vec<LayerSpecification>,
-}
-
 fn main() {
     let mut rng = rand::thread_rng();
     let mut materials: Vec<MaterialInfo> = Vec::new();
-    let mut dungeons_s1: Vec<DungeonS1> = Vec::new();
+    let mut dungeons_s1: Vec<DungeonS1>  = Vec::new();
+    let mut dungeons_s2: Vec<DungeonS2>  = Vec::new();
 
     // check arguments
     let args = std::env::args().collect::<Vec<String>>();
@@ -124,17 +106,14 @@ fn main() {
                 }
             }
 
+            // decide minerals
+            let mut new_map = DungeonS2::from_dungeon_s1(&map);
+            new_map.decide_materials(materials.clone(),
+                OpenSimplex::new().set_seed(rng.gen()), &layer);
             dungeons_s1.push(map);
+            dungeons_s2.push(new_map);
         }
     }
-
-    let mut dungeons_s2: Vec<DungeonS2> = Vec::new();
-    dungeons_s1.iter().for_each(|d| {
-        let mut new_d = DungeonS2::from_dungeon_s1(d);
-        new_d.decide_materials(materials.clone(),
-            BasicMulti::new().set_seed(rng.gen()));
-        dungeons_s2.push(new_d);
-    });
 
     for d in dungeons_s2 {
         display(&d);
