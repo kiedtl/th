@@ -24,3 +24,8 @@ walkdir = "2"
 [dependencies.noise]
 version = "0.6.0"
 default-features = false
+
+# used for the Saturating* traits
+# just to make my short life easier
+[dependencies.num]
+version = "0.3.0"
