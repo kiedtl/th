@@ -83,6 +83,11 @@ impl<R: Rng> Maze<'_, R> {
 
     }
 
+    // this function cannot and will not connect some rooms.
+    // this would normally be a bad thing, but actually this
+    // makes the maps more interesting as it leaves some
+    // hidden rooms that will only be discovered if the player
+    // uses a pickaxe to dig and reveal them
     pub fn connect_to_features(&mut self) {
         let max_doors   = 2;
 
@@ -153,8 +158,8 @@ impl<R: Rng> Maze<'_, R> {
 
     fn remove_dead_ends(&mut self, goal: usize) {
         for _ in 0..goal {
-            for y in 0isize..((self.map.height - 1) as isize) {
-                for x in 0isize..((self.map.width - 1) as isize) {
+            for y in 0isize..((self.map.height) as isize) {
+                for x in 0isize..((self.map.width) as isize) {
                     let neighbors = &[(-1, 0), (0,  -1), (0,  1), (1,  0)];
 
                     let mut neighbor_walls = 0;
