@@ -18,6 +18,10 @@ pub struct MazeOptions {
 
     // connect maze to existing features?
     connect_to_features: bool,
+
+    // chance of connecting corridors
+    // (x in 100)
+    chance_for_connection: usize,
 }
 
 impl MazeOptions {
@@ -26,6 +30,7 @@ impl MazeOptions {
         MazeOptions {
             remove_dead_ends: Some(1),
             connect_to_features: false,
+            chance_for_connection: 2,
         }
     }
 
@@ -38,6 +43,12 @@ impl MazeOptions {
     #[allow(dead_code)]
     pub fn connect_to_features(mut self, val: bool) -> MazeOptions {
         self.connect_to_features = val;
+        self
+    }
+
+    #[allow(dead_code)]
+    pub fn chance_for_connection(mut self, val: usize) -> MazeOptions {
+        self.chance_for_connection = val;
         self
     }
 }
@@ -230,9 +241,13 @@ impl<R: Rng> Maze<'_, R> {
                     continue;
             }
 
-            if self.map.d[ny as usize][nx as usize] != TileType::Wall ||
-                self.map.d[iy as usize][ix as usize] != TileType::Wall {
+            if self.map.d[ny as usize][nx as usize] != TileType::Wall {
+                // give a slight change of connecting to the corridor
+                if self.options.chance_for_connection > self.rng.gen_range(0, 100) {
+                    // do nothing
+                } else {
                     continue;
+                }
             }
 
             if self.point_intersects_features(nx, ny) ||
