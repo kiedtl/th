@@ -120,91 +120,99 @@ impl DungeonS2 {
             mats.get_mut(&(i.rarity as usize)).unwrap().push(i.clone());
         };
 
-        // iterate throughout map, choosig materials based on the noise
-        // value
+        // get list of all tiles in the map
+        let mut coords: Vec<(usize, usize)> = Vec::new();
         for y in 0..self.height {
             for x in 0..self.width {
-                let nx: f64 = (x as f64) / (self.width as f64)  - 0.5;
-                let ny: f64 = (y as f64) / (self.height as f64) - 0.5;
+                coords.push((y, x));
+            }
+        }
 
-                let noise =   1.0 * noise.get([ 1.0 * ny,  1.0 * nx])
-                          +   0.5 * noise.get([ 2.0 * ny,  2.0 * nx])
-                          +  0.25 * noise.get([ 4.0 * ny,  4.0 * nx])
-                          + 0.125 * noise.get([ 8.0 * ny,  8.0 * nx])
-                          + 0.062 * noise.get([16.0 * ny, 16.0 * nx])
-                          + 0.031 * noise.get([32.0 * ny, 32.0 * nx]);
-                // the value may be negative, so abs() it
-                // multiply it by 255 to make it a value between 0..255
-                let mut value = ((noise.abs().powf(exponent)) * 255.0) as usize;
+        // iterate through the map in **random** order,
+        // choosing materials based on the noise value for that coordinate
+        coords.shuffle(rng);
+        for coord in coords {
+            let (y, x) = coord;
+            let nx: f64 = (x as f64) / (self.width as f64)  - 0.5;
+            let ny: f64 = (y as f64) / (self.height as f64) - 0.5;
 
-                // get a list of all the materials that this coord's
-                // neighbors use
-                let neighboring_mats = utils::get_all_neighbors(self.width, self.height, x, y)
-                    .iter()
-                    .map(|(ny, nx)| self.d[*ny][*nx].tile_material.clone())
-                    .collect::<Vec<MaterialInfo>>();
+            let noise =   1.0 * noise.get([ 1.0 * ny,  1.0 * nx])
+                      +   0.5 * noise.get([ 2.0 * ny,  2.0 * nx])
+                      +  0.25 * noise.get([ 4.0 * ny,  4.0 * nx])
+                      + 0.125 * noise.get([ 8.0 * ny,  8.0 * nx])
+                      + 0.062 * noise.get([16.0 * ny, 16.0 * nx])
+                      + 0.031 * noise.get([32.0 * ny, 32.0 * nx]);
+            // the value may be negative, so abs() it
+            // multiply it by 255 to make it a value between 0..255
+            let mut value = ((noise.abs().powf(exponent)) * 255.0) as usize;
 
-                // helper function to check if a material can be placed
-                let has_correct_neighbors = |m: &MaterialInfo| {
-                    // if there are items in the found_near list,
-                    // and none of the neighbors use a material in that list,
-                    // then the material cannot be used
-                    let found_near = m.found_near().unwrap();
-                    if found_near.len() > 0 {
-                        let mut has_correct_neighbors = false;
-                        for neighboring_mat in &neighboring_mats {
-                            if found_near.contains(&m.name) ||
-                                found_near.contains(&neighboring_mat.name) {
-                                    has_correct_neighbors = true;
-                            }
-                        }
-                        return has_correct_neighbors;
-                    }
-                    true
-                };
+            // get a list of all the materials that this coord's
+            // neighbors use
+            let neighboring_mats = utils::get_all_neighbors(self.width, self.height, x, y)
+                .iter()
+                .map(|(ny, nx)| self.d[*ny][*nx].tile_material.clone())
+                .collect::<Vec<MaterialInfo>>();
 
-                // if there's no material that has a rarity value equivalent
-                // to the noise value, or none of the materials in that
-                // rarity group can be placed due to not having correct neighbors,
-                // lower the noise value.
-                loop {
-                    if mats.contains_key(&value) {
-                        let mut one_have_correct_neighbors = false;
-                        for mat in &mats[&value] {
-                            if has_correct_neighbors(mat) {
-                                one_have_correct_neighbors = true;
-                            }
-                        }
-
-                        if one_have_correct_neighbors {
-                            break;
+            // helper function to check if a material can be placed
+            let has_correct_neighbors = |m: &MaterialInfo| {
+                // if there are items in the found_near list,
+                // and none of the neighbors use a material in that list,
+                // then the material cannot be used
+                let found_near = m.found_near().unwrap();
+                if found_near.len() > 0 {
+                    let mut has_correct_neighbors = false;
+                    for neighboring_mat in &neighboring_mats {
+                        if found_near.contains(&m.name) ||
+                            found_near.contains(&neighboring_mat.name) {
+                                has_correct_neighbors = true;
                         }
                     }
+                    return has_correct_neighbors;
+                }
+                true
+            };
 
-                    value = value.saturating_sub(1);
+            // if there's no material that has a rarity value equivalent
+            // to the noise value, or none of the materials in that
+            // rarity group can be placed due to not having correct neighbors,
+            // lower the noise value.
+            loop {
+                if mats.contains_key(&value) {
+                    let mut one_have_correct_neighbors = false;
+                    for mat in &mats[&value] {
+                        if has_correct_neighbors(mat) {
+                            one_have_correct_neighbors = true;
+                        }
+                    }
+
+                    if one_have_correct_neighbors {
+                        break;
+                    }
                 }
 
-                // if there are more than one material for the rarity value
-                // then pick one based on what it's neighbors use
-                // for example if we need to choose between granite
-                // and basalt, and 5 neighbors use basalt but 3 use granite,
-                // then basalt should be more likely to be picked
-                self.d[y][x].tile_material = mats[&value].choose_weighted(rng, |m| {
-                    let mut probability: f64 = 1.0;
+                value = value.saturating_sub(1);
+            }
 
-                    for neighboring_mat in &neighboring_mats {
-                        if neighboring_mat == m {
-                            probability *= 2.2;
-                        } else {
-                            if probability > 1.0 {
-                                probability -= 0.3;
-                            }
+            // if there are more than one material for the rarity value
+            // then pick one based on what it's neighbors use
+            // for example if we need to choose between granite
+            // and basalt, and 5 neighbors use basalt but 3 use granite,
+            // then basalt should be more likely to be picked
+            self.d[y][x].tile_material = mats[&value].choose_weighted(rng, |m| {
+                let mut probability: f64 = 1.0;
+
+                for neighboring_mat in &neighboring_mats {
+                    if neighboring_mat == m {
+                        probability *= 2.2;
+                    } else {
+                        if probability > 1.0 {
+                            probability -= 0.3;
                         }
                     }
+                }
 
-                    probability.ceil() as usize
-                }).unwrap().clone();
-            }
+                probability.ceil() as usize
+            }).unwrap().clone();
         }
     }
 }
