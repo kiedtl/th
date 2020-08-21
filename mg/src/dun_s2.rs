@@ -137,18 +137,50 @@ impl DungeonS2 {
                 // multiply it by 255 to make it a value between 0..255
                 let mut value = ((noise.abs().powf(exponent)) * 255.0) as usize;
 
-                // if there's no material that has a rarity value equivalent
-                // to the noise value, lower the noise value
-                while !mats.contains_key(&value) {
-                    value = value.saturating_sub(1);
-                }
-
                 // get a list of all the materials that this coord's
                 // neighbors use
                 let neighboring_mats = utils::get_all_neighbors(self.width, self.height, x, y)
                     .iter()
                     .map(|(ny, nx)| self.d[*ny][*nx].tile_material.clone())
                     .collect::<Vec<MaterialInfo>>();
+
+                let has_correct_neighbors = |m: &MaterialInfo| {
+                    // if there are items in the found_near list,
+                    // and none of the neighbors use a material in that list,
+                    // return a probability of 0
+                    let found_near = m.found_near().unwrap();
+                    if found_near.len() > 0 {
+                        let mut has_correct_neighbors = false;
+                        for neighboring_mat in &neighboring_mats {
+                            if found_near.contains(&m.name) ||
+                                found_near.contains(&neighboring_mat.name) {
+                                    has_correct_neighbors = true;
+                            }
+                        }
+                        return has_correct_neighbors;
+                    }
+
+                    true
+                };
+
+                // if there's no material that has a rarity value equivalent
+                // to the noise value, lower the noise value
+                loop {
+                    if mats.contains_key(&value) {
+                        let mut one_have_correct_neighbors = false;
+                        for mat in &mats[&value] {
+                            if has_correct_neighbors(mat) {
+                                one_have_correct_neighbors = true;
+                            }
+                        }
+
+                        if one_have_correct_neighbors {
+                            break;
+                        }
+                    }
+
+                    value = value.saturating_sub(1);
+                }
 
                 // if there are more than one material for the rarity value
                 // then pick one based on what it's neighbors use
@@ -157,6 +189,7 @@ impl DungeonS2 {
                 // then basalt should be more likely to be picked
                 self.d[y][x].tile_material = mats[&value].choose_weighted(rng, |m| {
                     let mut probability: f64 = 1.0;
+
                     for neighboring_mat in &neighboring_mats {
                         if neighboring_mat == m {
                             probability *= 2.2;

@@ -79,3 +79,13 @@ pub struct MaterialInfo {
 
     pub edible: bool,
 }
+
+impl MaterialInfo {
+    pub fn found_near(&self) -> Option<Vec<String>> {
+        if let MaterialClass::Stone(stoneinfo) = self.class.clone() {
+            return Some(stoneinfo.found_near);
+        } else {
+            return None;
+        }
+    }
+}

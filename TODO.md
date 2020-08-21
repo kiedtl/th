@@ -8,12 +8,6 @@
 - Drunkard: allow diagonal movement (NE, NW, SE, SW)
 - Maze: randomly draw mazes until a certain amount of the map is filled
 - Mineral mapgen:
-    - if there are multiple stones with the same rarity, choose randomly
-      but favour stones with neighbors of the same type
-    - implement "found-near" behavious (that is, for stones with the
-    `found_near` key set, only place those minerals
-    IF they have neighbors that are either of the same type ore of one of
-    the stone in the `found_near` key
     - add some new stones! (metamorphic: gneiss, marble, quartzite, slate,
       soapstone), (igneous extrusive: dacite), (sedimentary: sandstone,
       shale, mudstone, limestone, dolomite, chalk), (ores: copper ore, more
