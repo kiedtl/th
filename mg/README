@@ -1,0 +1,36 @@
+Mapgen
+======
+
+This is the map generation utility for TH:CJA. It reads a
+`DungeonSpecification` file, which contains the layout and mineral
+composition information for each level.
+
+The final dungeon will follow the following structure:
+
++----------------------------------------------------------------+
+| level  name        type                   layer                |
+|     1  misc areas                         upper                |
+|     2  misc areas                         upper                |
+|     3  barracks    (orc)                  upper                |
+|     4  misc areas                         upper                |
+|     5  barracks    (misc)                 middle               |
+|     6  storage     (food/clothing)        middle               |
+|     7  storage     (raw materials/money)  middle               |
+|     8  storage     (armor/weapons)        Sauron's den         |
+|     9  workshops   (food/clothing)        Sauron's den         |
+|    10  laboratory  (poisons)              Sauron's den         |
+|    17  throneroom  (Sauron)               Sauron's den         |
+|    10  laboratory  (dynamite)             Sauron's den         |
+|    11  workshops   (smiths/smelters)      Sauron's den         |
+|    12  workshops   (breeding)             Sauron's den         |
+|    13  prisons     (misbehaviours)        lower                |
+|    14  prisons     (felons)               lower                |
+|    15  mines                              lower                |
+|    14  barracks    (offices)              lower                |
+|    16  mines                              Morgoth's lair       |
+|    17  throneroom  (Morgoth)              Morgoth's lair       |
+|    18  mines                              Morgoth's lair       |
+|    19  mines                              lowest               |
++----------------------------------------------------------------+
+
+TODO: explanation of layers
