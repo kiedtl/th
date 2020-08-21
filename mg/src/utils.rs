@@ -1,6 +1,9 @@
-use num::clamp;
-use num::traits::{SaturatingAdd, SaturatingSub, One, Zero};
-use std::vec::Vec;
+use num::{
+    traits::SaturatingAdd,
+    traits::SaturatingSub,
+    traits::One, traits::Zero,
+    clamp,
+};
 
 pub fn get_all_neighbors<T>(width: T, height: T, x: T, y: T) -> [(T, T); 8]
 where
