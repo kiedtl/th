@@ -3,8 +3,8 @@ MaterialInfo(
 	description: "", // TODO
 	class: Stone(
 		StoneInfo(
-			stone_type: IgneousExtrusive,
-			found_near: [], // TODO
+			stone_type: IgneousIntrusive,
+			found_near: [],
 		),
 	),
 	rarity: 1,
