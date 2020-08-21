@@ -14,8 +14,8 @@ MaterialInfo(
 		green: 210, alpha: 0,
 	),
 	color_fg: Color(
-		red: 210, blue: 210,
-		green: 255, alpha: 0,
+		red: 128, blue: 128,
+		green: 138, alpha: 0,
 	),
 	block_glyph: '▒',
 	melting_point: 1073.15,

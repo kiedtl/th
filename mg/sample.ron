@@ -12,7 +12,25 @@ DungeonSpecification(
                 noise_overlap: 6,
                 noise_seed: Manual(1),
             ),
-            algorithms: [],
+            algorithms: [
+                Cellular(
+                    CellularAutomataOptions(
+                        open_space_percentage: 55,
+                        wall_requirement: 6,
+                        island_requirement: 1,
+                        schedule: [
+                            RandomFill,
+                            FloorBar(1),
+                            Generation(true),
+                            Generation(true),
+                            Generation(false),
+                            Generation(false),
+                            Generation(false),
+                            Generation(false),
+                        ],
+                    ),
+                ),
+            ],
         ),
     ]
 )
