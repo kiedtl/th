@@ -4,9 +4,15 @@ DungeonSpecification(
     layers: [
         LayerSpecification(
             levels: 1,
-            dimensions: (125, 21),
+            dimensions: (125, 33),
+            composition: MineralPlacementOptions(
+                noise_exponent: 4.12,
+                allowed_stone: IgneousExtrusive,
+                noise_algorithm: Perlin,
+                noise_overlap: 6,
+                noise_seed: Manual(1),
+            ),
             algorithms: [],
-            stone_type: IgneousExtrusive,
         ),
     ]
 )
