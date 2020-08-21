@@ -156,18 +156,18 @@ impl DungeonS2 {
                 // and basalt, and 5 neighbors use basalt but 3 use granite,
                 // then basalt should be more likely to be picked
                 self.d[y][x].tile_material = mats[&value].choose_weighted(rng, |m| {
-                    let mut probability = 1.0;
+                    let mut probability: f64 = 1.0;
                     for neighboring_mat in &neighboring_mats {
                         if neighboring_mat == m {
-                            probability *= 2.5;
+                            probability *= 2.2;
                         } else {
-                            if score > 1.0 {
-                                probability -= 0.5;
+                            if probability > 1.0 {
+                                probability -= 0.3;
                             }
                         }
                     }
 
-                    probability as usize
+                    probability.ceil() as usize
                 }).unwrap().clone();
             }
         }
