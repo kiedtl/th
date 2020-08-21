@@ -75,7 +75,7 @@ impl DungeonS2 {
     }
 
     // TODO: mineral_mapgen class/options struct
-    // in other words, move this thing into a separate file :p
+    // in other words, move this thing into a separate file
     pub fn decide_materials<N, R>(&mut self, materials: Vec<MaterialInfo>, noise: N,
         spec: &LayerSpecification, rng: &mut R)
     where
@@ -91,18 +91,8 @@ impl DungeonS2 {
         // arrange materials into a hashmap by rarity value
         let mut mats: HashMap<usize, Vec<MaterialInfo>> = HashMap::new();
         for i in materials {
-            // ignore non-stone materials
-            match &i.class {
-                MaterialClass::Stone(info) => {
-                    if info.stone_type != spec.stone_type {
-                        continue;
-                    }
-                },
-                _ => continue,
-            }
-
             // ignore materials which don't occur naturally as
-            // blocks (that is, walls)
+            // blocks/walls
             match &i.occurs_naturally {
                 Some(occurs) => {
                     if !occurs.contains(&ItemType::Block) {
@@ -112,11 +102,21 @@ impl DungeonS2 {
                 None => continue,
             }
 
-            if !mats.contains_key(&(i.rarity as usize)) {
-                mats.entry(i.rarity as usize).or_insert(Vec::new());
+            // ignore non-stone materials and stones that
+            // aren't of the correct type
+            match &i.class {
+                MaterialClass::Stone(info) => {
+                    if info.stone_type != spec.stone_type {
+                        continue;
+                    }
+                },
+                _ => continue,
             }
 
             // insert
+            if !mats.contains_key(&(i.rarity as usize)) {
+                mats.entry(i.rarity as usize).or_insert(Vec::new());
+            }
             mats.get_mut(&(i.rarity as usize)).unwrap().push(i.clone());
         };
 
@@ -144,10 +144,11 @@ impl DungeonS2 {
                     .map(|(ny, nx)| self.d[*ny][*nx].tile_material.clone())
                     .collect::<Vec<MaterialInfo>>();
 
+                // helper function to check if a material can be placed
                 let has_correct_neighbors = |m: &MaterialInfo| {
                     // if there are items in the found_near list,
                     // and none of the neighbors use a material in that list,
-                    // return a probability of 0
+                    // then the material cannot be used
                     let found_near = m.found_near().unwrap();
                     if found_near.len() > 0 {
                         let mut has_correct_neighbors = false;
@@ -159,12 +160,13 @@ impl DungeonS2 {
                         }
                         return has_correct_neighbors;
                     }
-
                     true
                 };
 
                 // if there's no material that has a rarity value equivalent
-                // to the noise value, lower the noise value
+                // to the noise value, or none of the materials in that
+                // rarity group can be placed due to not having correct neighbors,
+                // lower the noise value.
                 loop {
                     if mats.contains_key(&value) {
                         let mut one_have_correct_neighbors = false;
