@@ -1,7 +1,7 @@
 use crate::cellular::*;
 use crate::drunk::*;
-use crate::material::*;
 use crate::maze::*;
+use crate::mineral_placement::*;
 use crate::randrm::*;
 use serde::Deserialize;
 use std::vec::Vec;
@@ -18,8 +18,8 @@ pub enum MapgenAlgorithm {
 pub struct LayerSpecification {
     pub levels: usize,
     pub dimensions: (usize, usize),   // (width, height)
+    pub composition: MineralPlacementOptions,
     pub algorithms: Vec<MapgenAlgorithm>,
-    pub stone_type: StoneType,
 }
 
 #[derive(Debug, Deserialize)]

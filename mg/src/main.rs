@@ -9,21 +9,22 @@ mod features;
 mod items;
 mod material;
 mod maze;
+mod mineral_placement;
 mod randrm;
 mod rect;
 mod utils;
+mod value;
 
 use crate::drunk::*;
 use crate::dunspec::*;
 use crate::dun_s1::*;
 use crate::dun_s2::*;
 use crate::maze::*;
+use crate::mineral_placement::*;
 use crate::cellular::*;
 use crate::material::*;
 use crate::randrm::*;
 
-use rand::prelude::*;
-use noise::{OpenSimplex, Seedable};
 use std::{fs, fs::File};
 use ron::de::from_reader;
 use walkdir::WalkDir;
@@ -109,8 +110,8 @@ fn main() {
 
             // decide minerals
             let mut new_map = DungeonS2::from_dungeon_s1(&map);
-            new_map.decide_materials(materials.clone(),
-                OpenSimplex::new().set_seed(rng.gen()), &layer, &mut rng);
+            MineralPlacer::new(&mut new_map, layer.composition, &mut rng)
+                .generate(materials.clone());
             dungeons_s1.push(map);
             dungeons_s2.push(new_map);
         }
