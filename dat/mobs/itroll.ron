@@ -1,0 +1,58 @@
+MobTemplate(
+	id: "internet_troll",
+	short_name: "troll",
+	long_name: "annoying troll",
+	tagline: "",
+	description: "An unusually annoying creature which enjoys provoking its victims with verbal attacks.",
+	ascii_glyph: "t",
+	unicode_glyph: "☻",
+	glyph_fg: Some(
+		Color(
+			red: 210, blue: 255,
+			green: 200, alpha: 0,
+		),
+	),
+	alignment: Hostile,
+	height: 103,
+	width: 46,
+	weight: 22,
+	composition: "troll flesh",
+	normal_body_temperature: 303,
+	min_body_temperature: 297.5,
+	max_body_temperature: 312.1,
+	needs_food: true,
+	needs_drink: true,
+	needs_sleep: true,
+	greetings: [
+		"sup dumbass",
+		"back already?",
+		// TODO
+	],
+	misc_lines: [
+		"get a life loser",
+		// TODO
+	],
+	farewells: [
+		// TODO
+	],
+	strength: 7,
+	agility: 128,
+	endurance: 4,
+	metabolism: 14,
+	willpower: 4,
+	focus: 4,
+	bravery: 2,
+	intelligence: 16,
+	aggressive: 9,
+	movement: Active,
+	age: Random(10, 16),
+	max_age: 18,
+	summoner: false,
+	summonable: true,
+	undead: false,
+	opposed_to_life: false,
+	necromancer: 0,
+	vampire: false,
+	is_unique: false,
+	max_in_map: 8,
+)

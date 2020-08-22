@@ -10,6 +10,7 @@ mod items;
 mod material;
 mod maze;
 mod mineral_placement;
+mod mob;
 mod randrm;
 mod rect;
 mod utils;

@@ -1,11 +1,17 @@
-use crate::value;
+use crate::colors::*;
+use crate::value::*;
+use rand::prelude::*;
+use serde::Deserialize;
 
+#[derive(Copy, Clone, Debug, PartialEq, Deserialize)]
 enum MobMovement {
+    Immobile,
     Sedentary,
     LightlyActive,
     Active,
 }
 
+#[derive(Copy, Clone, Debug, PartialEq, Deserialize)]
 enum MobAlignment {
     Hostile,        // the creatures is hostile to the player
     NeutralHostile, // the creature is neutral but will turn hostile if attacked
@@ -13,6 +19,7 @@ enum MobAlignment {
     Friendly,       // the creature is friendly, and will flee if attacked
 }
 
+#[derive(Clone, Debug, Deserialize)]
 struct MobTemplate {
     // must be unique
     // e.g "burning_brute"
@@ -33,8 +40,8 @@ struct MobTemplate {
     // capable of fearsome fire attacks"
     description: String,
 
-    glyph: char,
-    glyph_bg: Option<Color>,
+    ascii_glyph: char,
+    unicode_glyph: char,
     glyph_fg: Option<Color>,
 
     alignment: MobAlignment,
@@ -59,9 +66,6 @@ struct MobTemplate {
     greetings: Vec<String>,
     misc_lines: Vec<String>,
     farewells: Vec<String>,
-
-    // plants/hydras will have this turned on
-    immobile: true,
 
     // strength and agility should be obvious
     strength: Value<u8>,
@@ -92,7 +96,7 @@ struct MobTemplate {
 
     movement: MobMovement,
 
-    // what age is the character right now? (in seconds)
+    // what age is the character right now? (in years)
     age: Value<u64>,
     max_age: Option<Value<u64>>, // demons don't die of old age
 
@@ -100,6 +104,7 @@ struct MobTemplate {
     // controls whether character will be able to summon other demons
     // to their aid
     summoner: bool,
+    summonable: bool,
 
     undead: bool,
 
@@ -118,9 +123,7 @@ struct MobTemplate {
     vampire: bool,
 
     is_unique: bool,
-    max_in_dungeon: Option<usize>,
-    max_in_layer: Option<usize>,
-    max_in_level: Option<usize>,
+    max_in_map: Option<usize>,
 
     // TODO list
     // - list of body parts
@@ -133,12 +136,39 @@ struct MobTemplate {
 }
 
 impl MobTemplate {
-    pub fn generate_mob(&self) -> Mob {
-        Mob {
-            from_Mob_template: self.id,
-            alignment: self.alignment,
-            height: self.height.get(),
+    pub fn generate_mob<R>(&self, rng: &mut R) -> Mob 
+    where
+        R: Rng
+    {
+        let max_age: Option<u64>;
+        if let Some(v) = self.max_age {
+            max_age = Some(v.get(rng));
+        } else {
+            max_age = None;
+        }
 
+        Mob {
+            from_mob_template: self.id.clone(),
+            alignment: self.alignment,
+            height: self.height.get(rng),
+            width: self.width.get(rng),
+            weight: self.weight.get(rng),
+            normal_body_temperature: self.normal_body_temperature.get(rng),
+            min_body_temperature: self.max_body_temperature.get(rng),
+            max_body_temperature: self.min_body_temperature.get(rng),
+            strength: self.strength.get(rng),
+            agility: self.agility.get(rng),
+            endurance: self.endurance.get(rng),
+            metabolism: self.metabolism.get(rng),
+            willpower: self.willpower.get(rng),
+            focus: self.focus.get(rng),
+            bravery: self.bravery.get(rng),
+            intelligence: self.intelligence.get(rng),
+            aggressive: self.aggressive.get(rng),
+            age: self.age.get(rng),
+            max_age: max_age,
+            undead: self.undead,
+            opposed_to_life: self.opposed_to_life,
         }
     }
 }
@@ -157,9 +187,7 @@ struct Mob {
     min_body_temperature: usize,
     max_body_temperature: usize,
 
-    immobile: bool,
-
-    stength: u8,
+    strength: u8,
     agility: u8,
     endurance: u8,
     metabolism: u8,

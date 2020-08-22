@@ -4,7 +4,7 @@ DungeonSpecification(
     layers: [
         LayerSpecification(
             levels: 1,
-            dimensions: (512, 128),
+            dimensions: (80, 24),
             composition: MineralPlacementOptions(
                 noise_exponent: 5.12,
                 allowed_stone: IgneousExtrusive,
@@ -13,6 +13,25 @@ DungeonSpecification(
                 noise_seed: Manual(1),
             ),
             algorithms: [
+                RandomRooms(
+                     RandomRoomsOptions(
+                         max_rooms: None,
+                         max_tunnels: Some(0),
+                         room_max_width: 16,
+                         room_max_height: 8,
+                         room_min_width: 4,
+                         room_min_height: 2,
+                         room_border: 8,
+                     )
+                 ),
+
+                 Maze(
+                     MazeOptions(
+                         remove_dead_ends: Some(2048),
+                         connect_to_features: true,
+                         chance_for_connection: 2,
+                     ),
+                 ),
             ],
         ),
     ]

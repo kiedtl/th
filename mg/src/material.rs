@@ -24,13 +24,6 @@ pub enum MaterialClass {
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
-pub struct MaterialBurnInfo {
-    pub burning_point: f64,
-    pub burn_rate: usize, // gram per second
-    pub energy_per_gram: usize, // joules
-}
-
-#[derive(Clone, Debug, Deserialize, PartialEq)]
 pub struct MaterialInfo {
     // name of the material
     // e.g. "rhyolite"
@@ -59,7 +52,7 @@ pub struct MaterialInfo {
     // all temperatures are in kelvin
     pub melting_point: f64,
 
-    pub combustible: Option<MaterialBurnInfo>,
+    pub combustible: Option<f64>, // burn point
 
     // the material that results after smelting
     // this material
