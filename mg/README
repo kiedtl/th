@@ -2,8 +2,8 @@ Mapgen
 ======
 
 This is the map generation utility for TH:CJA. It reads a
-`DungeonSpecification` file, which contains the layout and mineral
-composition information for each level.
+`DungeonSpecification` file, which contains the layout, mineral
+composition, and mob information for each level.
 
 The final dungeon will follow the following structure:
 
