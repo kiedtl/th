@@ -27,7 +27,7 @@ The final dungeon will follow the following structure:
 |    16  prisons     (misbehaviours)        lower                             |
 |    17  prisons     (felons)               lower                             |
 |    18  mines                              lower                             |
-|    19  storage     (finished goods)       middle                            |
+|    19  storage     (finished goods)       lower                             |
 |    20  barracks    (offices)              lower                             |
 |    21  mines                              Morgoth's lair                    |
 |    22  throneroom  (Morgoth)              Morgoth's lair                    |
