@@ -1,5 +1,6 @@
 MobTemplate(
 	id: "internet_troll",
+	class: MiddleMob,
 	short_name: "troll",
 	long_name: "annoying troll",
 	tagline: "",
@@ -57,5 +58,5 @@ MobTemplate(
 	necromancer: Manual(0),
 	vampire: false,
 	is_unique: false,
-	max_in_map: Some(8),
+	max_in_map: 8,
 )
