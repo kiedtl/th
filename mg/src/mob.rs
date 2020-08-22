@@ -13,7 +13,11 @@ enum MobAlignment {
     Friendly,       // the creature is friendly, and will flee if attacked
 }
 
-struct MobSpecies {
+struct MobTemplate {
+    // must be unique
+    // e.g "burning_brute"
+    id: String,
+
     // e.g. "Burning Brute"
     short_name: String,
 
@@ -126,4 +130,48 @@ struct MobSpecies {
     // - polymorph_into: Vec<String>, // for werewolves
     // - can_cast_spells: bool,
     // - preferred_spells: Vec<Spell>,
+}
+
+impl MobTemplate {
+    pub fn generate_mob(&self) -> Mob {
+        Mob {
+            from_Mob_template: self.id,
+            alignment: self.alignment,
+            height: self.height.get(),
+
+        }
+    }
+}
+
+struct Mob {
+    // fields that are not unique to each specific mob (e.g. short_name,
+    // vampire, or needs_drink) are not put here.
+    from_mob_template: String,
+
+    alignment: MobAlignment,
+    height: u16,
+    width: u16,
+    weight: u16,
+
+    normal_body_temperature: usize,
+    min_body_temperature: usize,
+    max_body_temperature: usize,
+
+    immobile: bool,
+
+    stength: u8,
+    agility: u8,
+    endurance: u8,
+    metabolism: u8,
+    willpower: u8,
+    focus: u8,
+    bravery: u8,
+    intelligence: u8,
+    aggressive: u8,
+
+    age: u64,
+    max_age: Option<u64>,
+
+    undead: bool,
+    opposed_to_life: bool,
 }

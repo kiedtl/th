@@ -102,9 +102,9 @@ impl<R: Rng> MineralPlacer<'_, R> {
             }
         }
 
-        // iterate through the map in **random** order,
+        // iterate through the map
         // choosing materials based on the noise value for that coordinate
-        coords.shuffle(self.rng);
+        //coords.shuffle(self.rng);
         for coord in coords {
             let (y, x) = coord;
             let nx: f64 = (x as f64) / (self.map.width as f64)  - 0.5;
@@ -177,10 +177,10 @@ impl<R: Rng> MineralPlacer<'_, R> {
 
                 for neighboring_mat in &neighboring_mats {
                     if neighboring_mat == m {
-                        probability *= 2.1;
+                        probability *= 2.6;
                     } else {
-                        if probability > 1.0 {
-                            probability /= 1.1;
+                        if probability > 0.4 {
+                            probability /= 1.9;
                         }
                     }
                 }
