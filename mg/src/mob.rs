@@ -4,7 +4,17 @@ use rand::prelude::*;
 use serde::Deserialize;
 
 #[derive(Copy, Clone, Debug, PartialEq, Deserialize)]
-enum MobMovement {
+pub enum MobClass {
+    UpperMob,
+    MiddleMob,
+    SauronsDenMob,
+    LowerMob,
+    MorgothsLairMob,
+    LowestMob,
+}
+
+#[derive(Copy, Clone, Debug, PartialEq, Deserialize)]
+pub enum MobMovement {
     Immobile,
     Sedentary,
     LightlyActive,
@@ -12,7 +22,7 @@ enum MobMovement {
 }
 
 #[derive(Copy, Clone, Debug, PartialEq, Deserialize)]
-enum MobAlignment {
+pub enum MobAlignment {
     Hostile,        // the creatures is hostile to the player
     NeutralHostile, // the creature is neutral but will turn hostile if attacked
     Neutral,        // the creature is neutral, and will flee if attacked
@@ -20,110 +30,112 @@ enum MobAlignment {
 }
 
 #[derive(Clone, Debug, Deserialize)]
-struct MobTemplate {
+pub struct MobTemplate {
     // must be unique
     // e.g "burning_brute"
-    id: String,
+    pub id: String,
+
+    pub class: MobClass,
 
     // e.g. "Burning Brute"
-    short_name: String,
+    pub short_name: String,
 
     // e.g. "Brute of Burning"
-    long_name: String,
+    pub long_name: String,
 
     // tagline: used only for uniques
     // sort of like a title
     // e.g., the tagline for morgoth would be something like "lord of angband"
-    tagline: String,
+    pub tagline: String,
 
     // e.g. "A winged demon made of boiling granite,
     // capable of fearsome fire attacks"
-    description: String,
+    pub description: String,
 
-    ascii_glyph: char,
-    unicode_glyph: char,
-    glyph_fg: Option<Color>,
+    pub ascii_glyph: char,
+    pub unicode_glyph: char,
+    pub glyph_fg: Option<Color>,
 
-    alignment: MobAlignment,
-    height: Value<u16>, // centimeters
-    width: Value<u16>, // centimeters also
-    weight: Value<u16>, // kilograms
-    composition: String, // what material is it made of
+    pub alignment: MobAlignment,
+    pub height: Value<u16>, // centimeters
+    pub width: Value<u16>, // centimeters also
+    pub weight: Value<u16>, // kilograms
+    pub composition: String, // what material is it made of
 
-    normal_body_temperature: Value<usize>,
-    min_body_temperature: Value<usize>,
-    max_body_temperature: Value<usize>,
+    pub normal_body_temperature: Value<usize>,
+    pub min_body_temperature: Value<usize>,
+    pub max_body_temperature: Value<usize>,
 
-    needs_food: bool,
-    needs_drink: bool,
-    needs_sleep: bool,
+    pub needs_food: bool,
+    pub needs_drink: bool,
+    pub needs_sleep: bool,
 
     // stuff the character will yell at the player from time to time
     // greetings are yelled when the character first spots the player
     // misc_lines are yelled during combat
     // farewells are yelled just as the player leavs the character's
     // line of vision
-    greetings: Vec<String>,
-    misc_lines: Vec<String>,
-    farewells: Vec<String>,
+    pub greetings: Vec<String>,
+    pub misc_lines: Vec<String>,
+    pub farewells: Vec<String>,
 
     // strength and agility should be obvious
-    strength: Value<u8>,
-    agility: Value<u8>,
+    pub strength: Value<u8>,
+    pub agility: Value<u8>,
 
     // endurance controls how quickly a character faints from overexertion,
     // as well as the total blood supply
-    endurance: Value<u8>,
+    pub endurance: Value<u8>,
 
     // metabolism controls how quickly lost blood is replenished, how fast
     // lost health is regained, and how often the character must eat
-    metabolism: Value<u8>,
+    pub metabolism: Value<u8>,
 
     // willpower controls to what extent the character can resist
     // ranged spells
-    willpower: Value<u8>,
+    pub willpower: Value<u8>,
 
     // focus determines the accuracy of ranged attacks the character makes,
     // as well as how easily the character gets distracted
-    focus: Value<u8>,
+    pub focus: Value<u8>,
 
     // bravery controls how easily the character gets scared
     // ranges from 0 (coward) to 255 (fearless)
-    bravery: Value<u8>,
+    pub bravery: Value<u8>,
 
-    intelligence: Value<u8>,
-    aggressive: Value<u8>,
+    pub intelligence: Value<u8>,
+    pub aggressive: Value<u8>,
 
-    movement: MobMovement,
+    pub movement: MobMovement,
 
     // what age is the character right now? (in years)
-    age: Value<u64>,
-    max_age: Option<Value<u64>>, // demons don't die of old age
+    pub age: Value<u64>,
+    pub max_age: Option<Value<u64>>, // demons don't die of old age
 
     // most demons will have this
     // controls whether character will be able to summon other demons
     // to their aid
-    summoner: bool,
-    summonable: bool,
+    pub summoner: bool,
+    pub summonable: bool,
 
-    undead: bool,
+    pub undead: bool,
 
     // *most* undead creatures will have this
     // a creature that is opposed_to_life will attack any living thing, even
     // a servant of Morgoth, even Morgoth himself lol
-    opposed_to_life: bool,
+    pub opposed_to_life: bool,
 
     // controls how many corpses that character can raise non-necromancers
     // will have this set to 0
-    necromancer: Value<u8>,
+    pub necromancer: Value<u8>,
 
     // can the thing suck blood
     // if set to true, then needs_{sleep, food, drink} is ignored
     // i mean, why would a vampire eat or sleep
-    vampire: bool,
+    pub vampire: bool,
 
-    is_unique: bool,
-    max_in_map: Option<usize>,
+    pub is_unique: bool,
+    pub max_in_map: usize,
 
     // TODO list
     // - list of body parts
@@ -149,6 +161,9 @@ impl MobTemplate {
 
         Mob {
             from_mob_template: self.id.clone(),
+            ascii_glyph: self.ascii_glyph,
+            unicode_glyph: self.unicode_glyph,
+            glyph_fg: self.glyph_fg,
             alignment: self.alignment,
             height: self.height.get(rng),
             width: self.width.get(rng),
@@ -173,33 +188,38 @@ impl MobTemplate {
     }
 }
 
-struct Mob {
+#[derive(Clone, Debug, PartialEq, Deserialize)]
+pub struct Mob {
     // fields that are not unique to each specific mob (e.g. short_name,
     // vampire, or needs_drink) are not put here.
-    from_mob_template: String,
+    pub from_mob_template: String,
 
-    alignment: MobAlignment,
-    height: u16,
-    width: u16,
-    weight: u16,
+    pub ascii_glyph: char,
+    pub unicode_glyph: char,
+    pub glyph_fg: Option<Color>,
 
-    normal_body_temperature: usize,
-    min_body_temperature: usize,
-    max_body_temperature: usize,
+    pub alignment: MobAlignment,
+    pub height: u16,
+    pub width: u16,
+    pub weight: u16,
 
-    strength: u8,
-    agility: u8,
-    endurance: u8,
-    metabolism: u8,
-    willpower: u8,
-    focus: u8,
-    bravery: u8,
-    intelligence: u8,
-    aggressive: u8,
+    pub normal_body_temperature: usize,
+    pub min_body_temperature: usize,
+    pub max_body_temperature: usize,
 
-    age: u64,
-    max_age: Option<u64>,
+    pub strength: u8,
+    pub agility: u8,
+    pub endurance: u8,
+    pub metabolism: u8,
+    pub willpower: u8,
+    pub focus: u8,
+    pub bravery: u8,
+    pub intelligence: u8,
+    pub aggressive: u8,
 
-    undead: bool,
-    opposed_to_life: bool,
+    pub age: u64,
+    pub max_age: Option<u64>,
+
+    pub undead: bool,
+    pub opposed_to_life: bool,
 }

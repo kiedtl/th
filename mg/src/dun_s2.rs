@@ -3,6 +3,7 @@ use crate::dun_s1::*;
 use crate::features::*;
 use crate::items::*;
 use crate::material::*;
+use crate::mob::*;
 use std::vec::Vec;
 
 #[derive(Clone, Debug)]
@@ -10,9 +11,9 @@ pub struct DungeonTile {
     pub tiletype: TileType,
     pub tile_material: MaterialInfo,
 
-    // TODO: define Mob, Item structs
+    // TODO: define Item structs
     pub items: Vec<u8>,
-    pub mobs: Vec<u8>,
+    pub mobs: Vec<Mob>,
 }
 
 // a DungeonS2 ("Dungeon Stage 2") has all

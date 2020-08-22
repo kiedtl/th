@@ -3,39 +3,17 @@ use crate::material::*;
 use crate::items::*;
 use crate::utils;
 use crate::value;
-use noise::{
-    NoiseFn,
-    Perlin,
-    OpenSimplex,
-    BasicMulti,
-    HybridMulti,
-    Fbm,
-    Cylinders,
-    Value,
-    Seedable
-};
 use rand::prelude::*;
 use serde::Deserialize;
 use std::collections::HashMap;
 use std::vec::Vec;
 
 #[derive(Copy, Clone, Debug, PartialEq, Deserialize)]
-enum NoiseAlgorithm {
-    Perlin,      // mines
-    OpenSimplex, // misc
-    BasicMulti,  // misc
-    HybridMulti, // misc
-    Fbm,         // misc
-    Cylinders,   // melkor
-    Value,       // mines
-}
-
-#[derive(Copy, Clone, Debug, PartialEq, Deserialize)]
 pub struct MineralPlacementOptions {
     noise_exponent: f64,
     allowed_stone: StoneType,
-    noise_algorithm: NoiseAlgorithm,
-    noise_overlap: usize,
+    noise_algorithm: utils::NoiseAlgorithm,
+    noise_overlap: usize, // TODO
     noise_seed: value::Value<u32>,
 }
 
@@ -60,7 +38,8 @@ impl<R: Rng> MineralPlacer<'_, R> {
     }
 
     pub fn generate(&mut self, materials: Vec<MaterialInfo>) {
-        let noise = self.get_noise_function();
+        let noise = self.options.noise_algorithm
+            .as_noisefn(self.rng.gen());
 
         // arrange materials into a hashmap by rarity value
         let mut mats: HashMap<usize, Vec<MaterialInfo>> = HashMap::new();
@@ -188,25 +167,5 @@ impl<R: Rng> MineralPlacer<'_, R> {
                 probability
             }).unwrap().clone();
         }
-    }
-
-    fn get_noise_function(&mut self) -> Box<dyn NoiseFn<[f64; 2]>> {
-        let seed = self.options.noise_seed.get(self.rng);
-
-        return match self.options.noise_algorithm {
-            NoiseAlgorithm::Perlin =>
-                Box::new(Perlin::new().set_seed(seed)),
-            NoiseAlgorithm::OpenSimplex =>
-                Box::new(OpenSimplex::new().set_seed(seed)),
-            NoiseAlgorithm::BasicMulti =>
-                Box::new(BasicMulti::new().set_seed(seed)),
-            NoiseAlgorithm::HybridMulti =>
-                Box::new(HybridMulti::new().set_seed(seed)),
-            NoiseAlgorithm::Fbm =>
-                Box::new(Fbm::new().set_seed(seed)),
-            NoiseAlgorithm::Cylinders => Box::new(Cylinders::new()),
-            NoiseAlgorithm::Value =>
-                Box::new(Value::new().set_seed(seed)),
-        };
     }
 }

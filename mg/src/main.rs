@@ -10,31 +10,37 @@ mod items;
 mod material;
 mod maze;
 mod mineral_placement;
+mod mob_placement;
 mod mob;
 mod randrm;
 mod rect;
 mod utils;
 mod value;
 
+use crate::cellular::*;
+use crate::colors::*;
 use crate::drunk::*;
-use crate::dunspec::*;
 use crate::dun_s1::*;
 use crate::dun_s2::*;
-use crate::maze::*;
-use crate::mineral_placement::*;
-use crate::cellular::*;
+use crate::dunspec::*;
 use crate::material::*;
+use crate::maze::*;
+use crate::mob::*;
+use crate::mineral_placement::*;
+use crate::mob_placement::*;
 use crate::randrm::*;
 
 use std::{fs, fs::File};
+use std::error::Error;
 use ron::de::from_reader;
 use walkdir::WalkDir;
 
 fn main() {
     let mut rng = rand::thread_rng();
-    let mut materials: Vec<MaterialInfo> = Vec::new();
-    let mut dungeons_s1: Vec<DungeonS1>  = Vec::new();
-    let mut dungeons_s2: Vec<DungeonS2>  = Vec::new();
+    let mut materials:   Vec<MaterialInfo> = Vec::new();
+    let mut mobs:        Vec<MobTemplate>  = Vec::new();
+    let mut dungeons_s1: Vec<DungeonS1>    = Vec::new();
+    let mut dungeons_s2: Vec<DungeonS2>    = Vec::new();
 
     // check arguments
     let args = std::env::args().collect::<Vec<String>>();
@@ -46,24 +52,28 @@ fn main() {
 
     // load and parse material info files
     // TODO: do not hardcode paths
-    for entry in WalkDir::new("../dat/mats/")
-        .follow_links(true)
-        .into_iter()
-        .filter_map(|e| e.ok()) {
+    fn load_info_files<T>(arg0: &str, path: &str, accm: &mut Vec<T>) -> Result<(), Box<dyn Error>>
+    where
+        T: for<'a> serde::Deserialize<'a>
+    {
+        for entry_ in WalkDir::new(path) {
+            let entry = entry_.unwrap();
             if fs::metadata(entry.path()).unwrap().is_dir() {
                 continue;
             }
-
-            let info_file = File::open(entry.path())
-                .unwrap();
+            let info_file = File::open(entry.path()).unwrap();
             match from_reader(info_file) {
-                Ok(x) => materials.push(x),
+                Ok(x)  => accm.push(x),
                 Err(e) => {
                     eprintln!("{}: failed to load info file: {}: {}",
-                        args[0], entry.path().display(), e);
+                        arg0, entry.path().display(), e);
                 },
             }
+        }
+        Ok(())
     }
+    load_info_files(&args[0], "../dat/mats/", &mut materials).unwrap();
+    load_info_files(&args[0], "../dat/mobs/", &mut mobs).unwrap();
 
     // try to load configuration
     let input_path = &args[1];
@@ -109,10 +119,12 @@ fn main() {
                 }
             }
 
-            // decide minerals
+            // decide minerals and mobs
             let mut new_map = DungeonS2::from_dungeon_s1(&map);
             MineralPlacer::new(&mut new_map, layer.composition, &mut rng)
                 .generate(materials.clone());
+            MobPlacer::new(&mut new_map, layer.inhabitants.clone(), &mut rng)
+                .generate(&mut (mobs.clone()));
             dungeons_s1.push(map);
             dungeons_s2.push(new_map);
         }
@@ -126,22 +138,36 @@ fn main() {
 fn display(map: &DungeonS2) {
     for y in 0..(map.height) {
         for x in 0..(map.width) {
-            let bg = map.d[y][x].tile_material.color_bg;
-            let fg = map.d[y][x].tile_material.color_fg;
+            let mut bg = map.d[y][x].tile_material.color_bg;
+            let mut fg = map.d[y][x].tile_material.color_fg;
+            let mut glyph: char;
 
             match map.d[y][x].tiletype {
                 TileType::Debug
                 | TileType::Wall  => {
-                    print!("{}[38;2;{};{};{}m{}[48;2;{};{};{}m{}{}[m",
-                        0x1b as char, fg.red, fg.green, fg.blue,
-                        0x1b as char, bg.red, bg.green, bg.blue,
-                        map.d[y][x].tile_material.block_glyph, 0x1b as char);
+                    glyph = map.d[y][x].tile_material.block_glyph;
                 },
                 TileType::Floor => {
-                    print!("{}[38;2;{};{};{}m+",
-                        0x1b as char, fg.red, fg.green, fg.blue);
+                    glyph = '+';
+                    bg = Color::new(0, 0, 0, 0);
                 },
             }
+
+            if map.d[y][x].mobs.len() > 0 {
+                let mob = &map.d[y][x].mobs[0];
+                bg = Color::new(0, 0, 0, 0);
+                glyph = mob.unicode_glyph;
+                if let Some(mob_fg) = mob.glyph_fg {
+                    fg = mob_fg;
+                } else {
+                    fg = Color::new(0, 0, 0, 0);
+                }
+            }
+
+            print!("{}[38;2;{};{};{}m{}[48;2;{};{};{}m{}{}[m",
+                0x1b as char, fg.red, fg.green, fg.blue,
+                0x1b as char, bg.red, bg.green, bg.blue,
+                glyph, 0x1b as char);
         }
         print!("\n{}[m", 0x1b as char);
     }

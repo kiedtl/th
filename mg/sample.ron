@@ -10,7 +10,14 @@ DungeonSpecification(
                 allowed_stone: IgneousExtrusive,
                 noise_algorithm: BasicMulti,
                 noise_overlap: 6,
-                noise_seed: Manual(1),
+                noise_seed: Random(0, 512),
+            ),
+            inhabitants: MobPlacementOptions(
+                noise_exponent: 1.28,
+                allowed_classes: [MiddleMob],
+                noise_algorithm: Perlin,
+                noise_overlap: 6,
+                noise_seed: Random(0, 64),
             ),
             algorithms: [
                 RandomRooms(
@@ -27,7 +34,7 @@ DungeonSpecification(
 
                  Maze(
                      MazeOptions(
-                         remove_dead_ends: Some(2048),
+                         remove_dead_ends: Some(128),
                          connect_to_features: true,
                          chance_for_connection: 2,
                      ),
