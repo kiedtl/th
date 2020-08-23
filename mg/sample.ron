@@ -3,8 +3,8 @@
 DungeonSpecification(
     layers: [
         LayerSpecification(
-            levels: 1,
-            dimensions: (80, 24),
+            levels: 10,
+            dimensions: (400, 200),
             composition: MineralPlacementOptions(
                 noise_exponent: 5.12,
                 allowed_stone: IgneousExtrusive,

@@ -4,9 +4,10 @@ use rand::{
     distributions::{Distribution, Standard},
     Rng,
 };
+use serde::Serialize;
 use crate::rect::*;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize)]
 pub enum Feature {
     Tunnel(Rect),
     Room(Rect),

@@ -1,8 +1,9 @@
 use crate::colors::*;
+use crate::id::*;
 use crate::items::*;
-use serde::Deserialize;
+use serde::{Serialize, Deserialize};
 
-#[derive(Copy, Clone, Debug, Deserialize, PartialEq)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub enum StoneType {
     Sedimentary,
     IgneousExtrusive,
@@ -10,20 +11,20 @@ pub enum StoneType {
     Metamorphic,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct StoneInfo {
     pub stone_type: StoneType,
     pub found_near: Vec<String>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub enum MaterialClass {
     Stone(StoneInfo), Metal,
     Flesh, Bone,
     Other,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct MaterialInfo {
     // name of the material
     // e.g. "rhyolite"
@@ -71,6 +72,12 @@ pub struct MaterialInfo {
     pub occurs_naturally: Option<Vec<ItemType>>,
 
     pub edible: bool,
+}
+
+impl Id for MaterialInfo {
+    fn id(&self) -> String {
+        self.name.clone()
+    }
 }
 
 impl MaterialInfo {

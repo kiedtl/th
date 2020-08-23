@@ -1,5 +1,6 @@
 use crate::dun_s2::*;
 use crate::material::*;
+use crate::id::*;
 use crate::items::*;
 use crate::utils;
 use crate::value;
@@ -104,7 +105,7 @@ impl<R: Rng> MineralPlacer<'_, R> {
             let neighboring_mats = utils::get_all_neighbors(self.map.width, self.map.height, x, y)
                 .iter()
                 .map(|(ny, nx)| self.map.d[*ny][*nx].tile_material.clone())
-                .collect::<Vec<MaterialInfo>>();
+                .collect::<Vec<String>>();
 
             // helper function to check if a material can be placed
             let has_correct_neighbors = |m: &MaterialInfo| {
@@ -116,7 +117,7 @@ impl<R: Rng> MineralPlacer<'_, R> {
                     let mut has_correct_neighbors = false;
                     for neighboring_mat in &neighboring_mats {
                         if found_near.contains(&m.name) ||
-                            found_near.contains(&neighboring_mat.name) {
+                            found_near.contains(&neighboring_mat) {
                                 has_correct_neighbors = true;
                         }
                     }
@@ -151,21 +152,22 @@ impl<R: Rng> MineralPlacer<'_, R> {
             // for example if we need to choose between granite
             // and basalt, and 5 neighbors use basalt but 3 use granite,
             // then basalt should be more likely to be picked
-            self.map.d[y][x].tile_material = mats[&value].choose_weighted(self.rng, |m| {
-                let mut probability: f64 = 1.0;
-
-                for neighboring_mat in &neighboring_mats {
-                    if neighboring_mat == m {
-                        probability *= 2.6;
-                    } else {
-                        if probability > 0.4 {
-                            probability /= 1.9;
+            self.map.d[y][x].tile_material = mats[&value].iter()
+                .map(|m| m.id())
+                .collect::<Vec<String>>()
+                .choose_weighted(self.rng, |m| {
+                    let mut probability: f64 = 1.0;
+                    for neighboring_mat in &neighboring_mats {
+                        if neighboring_mat == m {
+                            probability *= 2.6;
+                        } else {
+                            if probability > 0.4 {
+                                probability /= 1.9;
+                            }
                         }
                     }
-                }
-
-                probability
-            }).unwrap().clone();
+                    probability
+                }).unwrap().clone();
         }
     }
 }

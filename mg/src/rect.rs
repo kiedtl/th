@@ -1,6 +1,7 @@
 use crate::dirs;
+use serde::Serialize;
 
-#[derive(PartialEq, Clone, Debug)]
+#[derive(PartialEq, Clone, Debug, Serialize)]
 pub struct Rect {
     pub x1: usize,
     pub y1: usize,

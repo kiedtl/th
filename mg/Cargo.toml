@@ -5,7 +5,6 @@ authors = ["Kiëd Llaentenn <kiedtl@tilde.team>"]
 edition = "2018"
 
 [dependencies]
-
 # random number generation,
 # used heavily during map generation
 rand = "0.7.0"
@@ -29,3 +28,9 @@ default-features = false
 # just to make my short life easier
 [dependencies.num]
 version = "0.3.0"
+
+# format used to store map data
+[dependencies.postcard]
+version = "*"
+default-features = false
+features = ["use-std"]

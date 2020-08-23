@@ -1,9 +1,10 @@
 use crate::colors::*;
+use crate::id::*;
 use crate::value::*;
 use rand::prelude::*;
-use serde::Deserialize;
+use serde::{Serialize, Deserialize};
 
-#[derive(Copy, Clone, Debug, PartialEq, Deserialize)]
+#[derive(Copy, Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub enum MobBody {
     Eye,
     Ear,
@@ -14,14 +15,14 @@ pub enum MobBody {
     Tail,
 }
 
-#[derive(Copy, Clone, Debug, PartialEq, Deserialize)]
+#[derive(Copy, Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub enum MobGender {
     Male,
     NonBinary,
     Female,
 }
 
-#[derive(Copy, Clone, Debug, PartialEq, Deserialize)]
+#[derive(Copy, Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub enum MobClass {
     UpperMob,
     MiddleMob,
@@ -31,7 +32,7 @@ pub enum MobClass {
     LowestMob,
 }
 
-#[derive(Copy, Clone, Debug, PartialEq, Deserialize)]
+#[derive(Copy, Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub enum MobMovement {
     Immobile,
     Sedentary,
@@ -39,7 +40,7 @@ pub enum MobMovement {
     Active,
 }
 
-#[derive(Copy, Clone, Debug, PartialEq, Deserialize)]
+#[derive(Copy, Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub enum MobAlignment {
     Hostile,        // the creatures is hostile to the player
     NeutralHostile, // the creature is neutral but will turn hostile if attacked
@@ -170,6 +171,12 @@ pub struct MobTemplate {
     // - preferred_spells: Vec<Spell>,
 }
 
+impl Id for MobTemplate {
+    fn id(&self) -> String {
+        self.id.clone()
+    }
+}
+
 impl MobTemplate {
     pub fn generate_mob<R>(&self, rng: &mut R) -> Mob 
     where
@@ -214,7 +221,7 @@ impl MobTemplate {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Mob {
     // fields that are not unique to each specific mob (e.g. short_name,
     // vampire, or needs_drink) are not put here.
