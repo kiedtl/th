@@ -14,6 +14,9 @@ pub struct DungeonTile {
     // TODO: define Item structs
     pub items: Vec<u8>,
     pub mobs: Vec<Mob>,
+
+    // in kelvin, of course
+    pub temperature: f64,
 }
 
 // a DungeonS2 ("Dungeon Stage 2") has all
@@ -55,6 +58,7 @@ impl DungeonS2 {
                     tiletype: dg.d[y][x],
                     tile_material: default_material.clone(),
                     items: vec![], mobs: vec![],
+                    temperature: 303.15, // 85°F
                 };
 
                 row.push(tile);
