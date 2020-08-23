@@ -5,6 +5,7 @@ MobTemplate(
 	long_name: "annoying troll",
 	tagline: "",
 	description: "An unusually annoying creature which enjoys provoking its victims with verbal attacks.",
+	allowed_genders: [(Male, 1), (Female, 1)],
 	ascii_glyph: 't',
 	unicode_glyph: '☻',
 	glyph_fg: Some(

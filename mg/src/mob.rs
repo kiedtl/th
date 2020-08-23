@@ -4,6 +4,13 @@ use rand::prelude::*;
 use serde::Deserialize;
 
 #[derive(Copy, Clone, Debug, PartialEq, Deserialize)]
+pub enum MobGender {
+    Male,
+    NonBinary,
+    Female,
+}
+
+#[derive(Copy, Clone, Debug, PartialEq, Deserialize)]
 pub enum MobClass {
     UpperMob,
     MiddleMob,
@@ -51,6 +58,9 @@ pub struct MobTemplate {
     // e.g. "A winged demon made of boiling granite,
     // capable of fearsome fire attacks"
     pub description: String,
+
+    // probability of genders
+    pub allowed_genders: Vec<(MobGender, u8)>,
 
     pub ascii_glyph: char,
     pub unicode_glyph: char,
@@ -161,6 +171,8 @@ impl MobTemplate {
 
         Mob {
             from_mob_template: self.id.clone(),
+            gender: self.allowed_genders
+                .choose_weighted(rng, |g| g.1).unwrap().0,
             ascii_glyph: self.ascii_glyph,
             unicode_glyph: self.unicode_glyph,
             glyph_fg: self.glyph_fg,
@@ -193,6 +205,8 @@ pub struct Mob {
     // fields that are not unique to each specific mob (e.g. short_name,
     // vampire, or needs_drink) are not put here.
     pub from_mob_template: String,
+
+    pub gender: MobGender,
 
     pub ascii_glyph: char,
     pub unicode_glyph: char,
