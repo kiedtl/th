@@ -21,8 +21,6 @@
       metamorphic), saltpeter (sedimentary), serpintine (olivine), talc
       (dolomite) plus some gems (diamonds, rubies, sapphire, opals,
       zircons, turquoise, jaspers, pyrite)
-- Mobs mapgen
-  - track list of body parts
 - Features/Items mapgen:
   - define Item struct
     - weapons
