@@ -8,29 +8,29 @@ composition, and mob information for each level.
 The final dungeon will follow the following structure:
 
 +-----------------------------------------------------------------------------+
-| level  name        type                   layer                             |
-|     1  misc areas                         upper                             |
-|     2  misc areas                         upper                             |
-|     4  misc areas                         upper                             |
-|     3  barracks    (orc)                  upper                             |
-|     5  barracks    (misc)                 middle                            |
-|     6  storage     (food/clothing)        middle                            |
-|     7  storage     (raw materials/money)  middle                            |
-|     8  storage     (armor/weapons)        Sauron's den                      |
-|     9  workshops   (smiths/smelters)      Sauron's den                      |
-|    10  workshops   (food/clothing)        Sauron's den                      |
-|    11  laboratory  (poisons)              Sauron's den                      |
-|    12  throneroom  (Sauron)               Sauron's den                      |
-|    13  laboratory  (dynamite)             Sauron's den                      |
-|    14  workshops   (breeding)             Sauron's den                      |
-|    15  workshops   (leatherworks/misc)    Sauron's den                      |
-|    16  prisons     (misbehaviours)        lower                             |
-|    17  prisons     (felons)               lower                             |
-|    18  mines                              lower                             |
-|    19  storage     (finished goods)       lower                             |
-|    20  barracks    (offices)              lower                             |
-|    21  mines                              Morgoth's lair                    |
-|    22  throneroom  (Morgoth)              Morgoth's lair                    |
-|    23  mines                              Morgoth's lair                    |
-|    24  mines                              lowest                            |
+| level  name        type                   layer           maptype           |
+|     1  misc areas                         upper           randrm+tun        |
+|     2  misc areas                         upper           randrm+tun, cell  |
+|     4  misc areas                         upper           randrm+tun, cell  |
+|     3  barracks    (orc)                  upper           randrm+tun        |
+|     5  barracks    (misc)                 middle          randrm+tun        |
+|     6  storage     (food/clothing)        middle          randrm+tun        |
+|     7  storage     (raw materials/money)  middle          randrm+tun        |
+|     8  storage     (armor/weapons)        Sauron's den    randrm, maze      |
+|     9  workshops   (smiths/smelters)      Sauron's den    randrm, maze      |
+|    10  workshops   (food/clothing)        Sauron's den    randrm, maze      |
+|    11  laboratory  (poisons)              Sauron's den    bsp               |
+|    12  throneroom  (Sauron)               Sauron's den    randrm, maze      |
+|    13  laboratory  (dynamite)             Sauron's den    randrm, maze      |
+|    14  workshops   (breeding)             Sauron's den    randrm, maze      |
+|    15  workshops   (leatherworks/misc)    Sauron's den    randrm, maze      |
+|    16  prisons     (misbehaviours)        lower           tunnelers         |
+|    17  prisons     (felons)               lower           tunnelers         |
+|    18  mines                              lower           drunkards         |
+|    19  storage     (finished goods)       lower           bsp               |
+|    20  barracks    (offices)              lower           randrm+tun        |
+|    21  mines                              Morgoth's lair  drunkards         |
+|    22  throneroom  (Morgoth)              Morgoth's lair  bsp               |
+|    23  mines                              Morgoth's lair  drunkards         |
+|    24  mines                              lowest          cellular          |
 +-----------------------------------------------------------------------------+
