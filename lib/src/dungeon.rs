@@ -3,10 +3,10 @@
 
 use chrono::prelude::*;
 use crate::dun_s2::*;
-use serde::Serialize;
+use serde::{Serialize, Deserialize};
 use std::vec::Vec;
 
-#[derive(Clone, Serialize)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct Dungeon {
     world_name: String,
     created_on: i64,

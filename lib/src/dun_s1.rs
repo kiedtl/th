@@ -1,9 +1,9 @@
 use std::vec::Vec;
 use crate::features::*;
 use rand::prelude::*;
-use serde::Serialize;
+use serde::{Serialize, Deserialize};
 
-#[derive(Copy, Clone, Debug, PartialEq, Serialize)]
+#[derive(Copy, Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub enum TileType {
     // TODO: ditch
     Wall, Floor,

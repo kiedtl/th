@@ -1,10 +1,10 @@
 use crate::dun_s1::*;
 use crate::features::*;
 use crate::mob::*;
-use serde::Serialize;
+use serde::{Serialize, Deserialize};
 use std::vec::Vec;
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct DungeonTile {
     pub tiletype: TileType,
     pub tile_material: String,
@@ -20,7 +20,7 @@ pub struct DungeonTile {
 // a DungeonS2 ("Dungeon Stage 2") has all
 // the information that a DungeonS1 is missing,
 // including items, mobs, material, etc
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct DungeonS2 {
     pub d: Vec<Vec<DungeonTile>>,
     pub width: usize, pub height: usize,
