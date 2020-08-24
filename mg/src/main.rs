@@ -129,7 +129,7 @@ fn main() {
     }
 
     let dungeon = Dungeon::from_dungeon_s2(config.world_name, dungeons_s2);
-    fs::write("map", postcard::to_stdvec(&dungeon).unwrap()).unwrap();
+    fs::write("map.ron", ron::to_string(&dungeon).unwrap().as_bytes()).unwrap();
 }
 
 fn display(map: &DungeonS2, materials: &HashMap<String, MaterialInfo>) {

@@ -29,11 +29,5 @@ default-features = false
 [dependencies.num]
 version = "0.3.0"
 
-# format used to store map data
-[dependencies.postcard]
-version = "*"
-default-features = false
-features = ["use-std"]
-
 [dependencies.lib]
 path = "../lib"
