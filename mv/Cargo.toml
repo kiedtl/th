@@ -1,0 +1,11 @@
+[package]
+name = "mapviewer"
+version = "0.1.0"
+authors = ["Kiëd Llaentenn <kiedtl@tilde.team>"]
+edition = "2018"
+
+[dependencies]
+pancurses = "0.16"
+
+[dependencies.lib]
+path = "../lib"
