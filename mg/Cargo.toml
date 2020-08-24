@@ -1,5 +1,5 @@
 [package]
-name = "mg"
+name = "mapgen"
 version = "0.1.0"
 authors = ["Kiëd Llaentenn <kiedtl@tilde.team>"]
 edition = "2018"
