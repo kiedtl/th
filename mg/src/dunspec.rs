@@ -26,5 +26,6 @@ pub struct LayerSpecification {
 
 #[derive(Debug, Deserialize)]
 pub struct DungeonSpecification {
+    pub world_name: String,
     pub layers: Vec<LayerSpecification>,
 }

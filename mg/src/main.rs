@@ -4,6 +4,7 @@ mod dirs;
 mod drunk;
 mod dun_s1;
 mod dun_s2;
+mod dungeon;
 mod dunspec;
 mod features;
 mod id;
@@ -23,6 +24,7 @@ use crate::colors::*;
 use crate::drunk::*;
 use crate::dun_s1::*;
 use crate::dun_s2::*;
+use crate::dungeon::*;
 use crate::dunspec::*;
 use crate::id::*;
 use crate::material::*;
@@ -138,9 +140,8 @@ fn main() {
         }
     }
 
-    for d in dungeons_s2 {
-        fs::write("map", postcard::to_stdvec(&d).unwrap()).unwrap();
-    }
+    let dungeon = Dungeon::from_dungeon_s2(config.world_name, dungeons_s2);
+    fs::write("map", postcard::to_stdvec(&dungeon).unwrap()).unwrap();
 }
 
 fn display(map: &DungeonS2, materials: &HashMap<String, MaterialInfo>) {
