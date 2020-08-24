@@ -8,9 +8,9 @@ use std::vec::Vec;
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct Dungeon {
-    world_name: String,
-    created_on: i64,
-    levels: Vec<DungeonS2>,
+    pub world_name: String,
+    pub created_on: i64,
+    pub levels: Vec<DungeonS2>,
 }
 
 impl Dungeon {
