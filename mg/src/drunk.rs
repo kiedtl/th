@@ -1,6 +1,6 @@
 use rand::prelude::*;
-use crate::dirs::*;
-use crate::dun_s1::*;
+use lib::dirs::*;
+use lib::dun_s1::*;
 use serde::Deserialize;
 
 #[derive(Debug, Clone, Copy, Deserialize)]

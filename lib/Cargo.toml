@@ -1,0 +1,22 @@
+[package]
+name = "lib"
+version = "0.1.0"
+authors = ["Kiëd Llaentenn <kiedtl@tilde.team>"]
+edition = "2018"
+
+[dependencies]
+rand = "0.7.0"
+chrono = "0.4"
+
+[dependencies.noise]
+version = "0.6.0"
+default-features = false
+
+# used for the Saturating* traits
+# just to make my short life easier
+[dependencies.num]
+version = "0.3.0"
+
+[dependencies.serde]
+version = "1.0.0"
+features = ["derive"]

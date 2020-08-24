@@ -18,10 +18,6 @@ ron = "0.6.0"
 # item definitions
 walkdir = "2"
 
-# used to get the creation date of the generated
-# world
-chrono = "0.4"
-
 # Perlin/OpenSimplex noise generator used for
 # making clusters/"veins" of minerals
 [dependencies.noise]
@@ -38,3 +34,6 @@ version = "0.3.0"
 version = "*"
 default-features = false
 features = ["use-std"]
+
+[dependencies.lib]
+path = "../lib"

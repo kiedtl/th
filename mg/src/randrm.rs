@@ -3,9 +3,9 @@
 // around and then connecting them with
 // overlapping tunnels later.
 
-use crate::rect::*;
-use crate::features::*;
-use crate::dun_s1::*;
+use lib::rect::*;
+use lib::features::*;
+use lib::dun_s1::*;
 use std::vec::Vec;
 use std::cmp::{min, max};
 use rand::prelude::*;

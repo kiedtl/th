@@ -2,7 +2,7 @@ use std::vec::Vec;
 use serde::Deserialize;
 use rand::prelude::*;
 
-use crate::dun_s1::*;
+use lib::dun_s1::*;
 
 #[derive(Copy, Clone, Debug, Deserialize)]
 pub enum JobType {

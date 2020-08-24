@@ -1,9 +1,9 @@
-use crate::dun_s2::*;
-use crate::material::*;
-use crate::id::*;
-use crate::items::*;
+use lib::dun_s2::*;
+use lib::material::*;
+use lib::id::*;
+use lib::items::*;
 use crate::utils;
-use crate::value;
+use lib::value;
 use rand::prelude::*;
 use serde::Deserialize;
 use std::collections::HashMap;

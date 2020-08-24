@@ -3,9 +3,9 @@
 
 use serde::Deserialize;
 use rand::prelude::*;
-use crate::dirs::*;
-use crate::features::*;
-use crate::dun_s1::*;
+use lib::dirs::*;
+use lib::features::*;
+use lib::dun_s1::*;
 
 #[derive(Copy, Clone, Debug, Deserialize)]
 pub struct MazeOptions {
