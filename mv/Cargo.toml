@@ -5,7 +5,10 @@ authors = ["Kiëd Llaentenn <kiedtl@tilde.team>"]
 edition = "2018"
 
 [dependencies]
+ron = "0.6"
 pancurses = "0.16"
+serde = "1.0"
+walkdir = "2"
 
 [dependencies.lib]
 path = "../lib"

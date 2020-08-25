@@ -4,7 +4,7 @@ DungeonSpecification(
     world_name: "Stiapocumne",
     layers: [
         LayerSpecification(
-            levels: 10,
+            levels: 2,
             dimensions: (200, 100),
             composition: MineralPlacementOptions(
                 noise_exponent: 5.12,
