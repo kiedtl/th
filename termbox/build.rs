@@ -1,5 +1,4 @@
 use std::env;
-use std::fs;
 use std::path::Path;
 use std::process::{Stdio, Command};
 
@@ -9,10 +8,9 @@ fn main() {
 
     clean();
     setup();
-    configure();
     build();
     install(&dst);
-    clean();
+
     println!("cargo:rustc-link-search={}", dst.join("lib").display());
     println!("cargo:rustc-link-lib=static=termbox");
 }
@@ -20,7 +18,7 @@ fn main() {
 fn setup() {
     let mut cmd = Command::new("git");
     cmd.arg("clone");
-    cmd.arg("https://github.com/nsf/termbox");
+    cmd.arg("https://github.com/nullgemm/termbox_next");
     cmd.arg(".termbox");
     let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
     let cargo_dir = Path::new(&manifest_dir);
@@ -39,51 +37,25 @@ fn clean() {
     run(&mut cmd);
 }
 
-fn configure() {
-    let mut cmd = waf();
-    cmd.arg("configure");
-    cmd.arg("--prefix=/");
-    cmd.arg("--libdir=/lib");
-
-    let target = env::var("TARGET").unwrap();
-    let mut cflags;
-    if target.contains("i686") {
-        cflags = "-m32"
-    } else if target.contains("x86_64") {
-        cflags = "-m64 -fPIC"
-    } else {
-        cflags = "-fPIC"
-    }
-    println!("waf configure: setting CFLAGS to: `{}`", cflags);
-    env::set_var("CFLAGS", cflags);
-
-    run(&mut cmd);
-    env::remove_var("CFLAGS");
-}
-
 fn build() {
-    let mut cmd = waf();
-    cmd.arg("build");
-    cmd.arg("--targets=termbox_static");
+    let mut cmd = Command::new("make");
+    cmd.arg("-C");
+    cmd.arg(".termbox");
     run(&mut cmd);
 }
 
 fn install(dst: &Path) {
-    let mut cmd = waf();
-    cmd.arg("install");
-    cmd.arg("--targets=termbox_static");
-    cmd.arg(format!("--destdir={}", dst.display()));
-    run(&mut cmd);
-}
+    // my laziness in not using std::fs is astounding
+    let mut mkdircmd = Command::new("mkdir");
+    mkdircmd.arg("-p");
+    mkdircmd.arg(format!("{}/lib/", dst.display()));
+    run(&mut mkdircmd);
 
-fn waf() -> Command {
-    let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-    let cargo_dir = Path::new(&manifest_dir);
-    let termbox_dir = cargo_dir.join(".termbox");
-    let waf_file = fs::canonicalize(&termbox_dir.join("waf")).expect("Invalid location of waf file");
-    let mut cmd = Command::new(waf_file);
-    cmd.current_dir(&termbox_dir);
-    cmd
+    let mut cmd = Command::new("install");
+    cmd.arg("-D");
+    cmd.arg(".termbox/bin/termbox.a");
+    cmd.arg(format!("{}/lib/libtermbox.a", dst.display()));
+    run(&mut cmd);
 }
 
 fn run(cmd: &mut Command) {

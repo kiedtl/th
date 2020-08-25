@@ -7,7 +7,6 @@ authors = [
     "Tom Jakubowski <tom@crystae.net>"
 ]
 
-links = "termbox"
 build = "build.rs"
 license = "MIT"
 description = "Low level bindings for the termbox library"
