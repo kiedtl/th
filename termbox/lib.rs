@@ -7,8 +7,8 @@ use std::os::raw::{
 #[derive(Clone, Copy)]
 pub struct RawCell {
     pub ch: u32,
-    pub fg: u16,
-    pub bg: u16,
+    pub fg: u32,
+    pub bg: u32,
 }
 
 #[repr(C)]
@@ -34,7 +34,7 @@ extern "C" {
     pub fn tb_present();
     pub fn tb_set_cursor(cx: c_int, cy: c_int);
     pub fn tb_put_cell(x: c_int, y: c_int, cell: *const RawCell);
-    pub fn tb_change_cell(x: c_int, y: c_int, ch: u32, fg: u16, bg: u16);
+    pub fn tb_change_cell(x: c_int, y: c_int, ch: u32, fg: u32, bg: u32);
     pub fn tb_blit(x: c_int, y: c_int, w: c_int, h: c_int, cells: *const RawCell);
     pub fn tb_cell_buffer() -> *mut RawCell;
     pub fn tb_select_input_mode(mode: c_int) -> c_int;
@@ -157,5 +157,6 @@ pub const TB_OUTPUT_NORMAL: c_int = 1;
 pub const TB_OUTPUT_256: c_int = 2;
 pub const TB_OUTPUT_216: c_int = 3;
 pub const TB_OUTPUT_GRAYSCALE: c_int = 4;
+pub const TB_OUTPUT_TRUECOLOR: c_int = 5;
 
 pub const TB_EOF: c_int = -1;
