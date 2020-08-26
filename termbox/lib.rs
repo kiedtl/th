@@ -24,6 +24,16 @@ pub struct RawEvent {
     pub y: i32,
 }
 
+impl RawEvent {
+    pub fn new() -> RawEvent {
+        RawEvent {
+            etype: 0, emod: 0,
+            key: 0, ch: 0,
+            w: 0, h: 0, x: 0, y: 0,
+        }
+    }
+}
+
 extern "C" {
     pub fn tb_init() -> c_int;
     pub fn tb_shutdown();

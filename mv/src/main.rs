@@ -15,8 +15,6 @@ use std::collections::HashMap;
 use std::fs::File;
 use termbox_sys::*;
 
-const NIL_RAW_EVENT: RawEvent = RawEvent { etype: 0, emod: 0, key: 0, ch: 0, w: 0, h: 0, x: 0, y: 0 };
-
 fn main() {
     // set a custom panic handler that calls tb_shutdown
     // before printing anything
@@ -94,7 +92,7 @@ fn main() {
 
     // main loop
     loop {
-        let mut raw_ev = NIL_RAW_EVENT;
+        let mut raw_ev = RawEvent::new();
         let t = unsafe { tb_poll_event(&mut raw_ev) };
 
         if t == -1 {
