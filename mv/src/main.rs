@@ -1,3 +1,6 @@
+mod kbd;
+mod state;
+
 use std::{fs, fs::File};
 use ron::de::from_reader;
 use lib::dungeon::*;
@@ -7,9 +10,10 @@ use lib::id::*;
 use lib::colors::*;
 use lib::dun_s1::*;
 use lib::dun_s2::*;
-use lib::math::*;
 use std::error::Error;
 use std::collections::HashMap;
+use crate::state::*;
+use crate::kbd::*;
 use termbox_sys::*;
 
 const NIL_RAW_EVENT: RawEvent = RawEvent { etype: 0, emod: 0, key: 0, ch: 0, w: 0, h: 0, x: 0, y: 0 };
@@ -27,16 +31,11 @@ fn main() {
             "https://github.com/kiedtl/th");
     }));
 
-    let screen_width;
-    let screen_height;
-
     unsafe {
         tb_init();
         tb_select_output_mode(TB_OUTPUT_TRUECOLOR);
         tb_set_clear_attributes(TB_WHITE, TB_BLACK);
         tb_clear();
-        screen_width = tb_width();
-        screen_height = tb_height();
     }
 
     // check arguments
@@ -95,14 +94,12 @@ dyn Error>>
     let mut materials: HashMap<String, MaterialInfo> = HashMap::new();
     load_info_files(&args[0], "../dat/mats/", &mut materials).unwrap();
 
-    let mut cursor_x = 0;
-    let mut cursor_y = 0;
-    let mut current_level = 0;
+    let mut st: State = State::new(map);
 
-    draw_map(&map, screen_width / 2, screen_height - 5,
-        &materials, cursor_x, cursor_y, current_level);
-    draw_desc(&map, screen_width, screen_height,
-        &materials, cursor_x, cursor_y, current_level);
+    draw_map(&st.dungeon, st.screen_width / 2, st.screen_height - 5,
+        &materials, st.current_x, st.current_y, st.level);
+    draw_desc(&st.dungeon, st.screen_width, st.screen_height,
+        &materials, st.current_x, st.current_y, st.level);
 
     // write keybindings
     let kbds: Vec<(&str, &str)> = vec![
@@ -114,18 +111,19 @@ dyn Error>>
 
     for kbd_i in 0..(kbds.len()) {
         let kbd = kbds[kbd_i];
-        let row = screen_height - 5 + (kbd_i as i32);
+        let row = st.screen_height - 5 + (kbd_i as i32);
         let mut col: i32 = 0;
 
-        col = tb_put_string(screen_width / 2, screen_height, col, row,
+        col = tb_put_string(st.screen_width / 2, st.screen_height, col, row,
             kbd.0, 0x000000, 0xffffff, false).1;
         if col < 5 { col += 5 - col; }
-        tb_put_string(screen_width / 2, screen_height, col, row,
+        tb_put_string(st.screen_width / 2, st.screen_height, col, row,
             kbd.1, 0xffffff, 0x000000, false).1;
     }
 
     unsafe { tb_present(); }
 
+    let kbd = Keybindings::new();
     loop {
         let mut ev = NIL_RAW_EVENT;
         let t = unsafe { tb_poll_event(&mut ev) };
@@ -136,25 +134,15 @@ dyn Error>>
         }
 
         if t == (TB_EVENT_KEY as i32) {
-            match std::char::from_u32(ev.ch).unwrap() {
-                'q' => break,
-                'h' => cursor_x = cursor_x.saturating_sub(1),
-                'j' => cursor_y = clamp(cursor_y + 1, 0, map.levels[current_level].height - 1),
-                'k' => cursor_y = cursor_y.saturating_sub(1),
-                'l' => cursor_x = clamp(cursor_x + 1, 0, map.levels[current_level].width - 1),
-                'H' => cursor_x = cursor_x.saturating_sub(8),
-                'J' => cursor_y = clamp(cursor_y + 8, 0, map.levels[current_level].height - 1),
-                'K' => cursor_y = cursor_y.saturating_sub(8),
-                'L' => cursor_x = clamp(cursor_x + 8, 0, map.levels[current_level].width - 1),
-                '>' => current_level = clamp(current_level + 1, 0, map.levels.len() - 1),
-                '<' => current_level = current_level.saturating_sub(1),
-                _ => (),
+            match kbd.handle_ev(&ev, &mut st) {
+                Ok(_) => (),
+                Err(_) => break,
             }
 
-            draw_map(&map, screen_width / 2, screen_height - 5,
-                &materials, cursor_x, cursor_y, current_level);
-            draw_desc(&map, screen_width, screen_height,
-                &materials, cursor_x, cursor_y, current_level);
+            draw_map(&st.dungeon, st.screen_width / 2, st.screen_height - 5,
+                &materials, st.current_x, st.current_y, st.level);
+            draw_desc(&st.dungeon, st.screen_width, st.screen_height,
+                &materials, st.current_x, st.current_y, st.level);
             unsafe { tb_present(); }
         }
 
