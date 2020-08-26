@@ -1,6 +1,17 @@
 # TODO
-- implement `img` (**i**nteractive **m**ap**g**en)
-- and maybe the actual game? :^)
+
+## th (the actual game)
+- very basic implementation
+  - simple movement around, thats all
+    - HJKLYUBN keys
+    - Ctrl-S to save
+
+## mv (mapview)
+- diag. movement with YUBN keys
+- don't hardcode keybindings help
+- show more information for materials (e.g. hardness)
+- show information for mobs on tiles
+- show information for items on tiles
 
 ## mg (mapgen)
 
