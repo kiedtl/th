@@ -10,17 +10,17 @@ The final dungeon will follow the following structure:
 +-----------------------------------------------------------------------------+
 | level  name        type                   layer           maptype           |
 |     1  misc areas                         upper           randrm+tun        |
-|     2  misc areas                         upper           randrm+tun, cell  |
+|     2  mines                              upper           cellular          |
 |     4  misc areas                         upper           randrm+tun, cell  |
 |     3  barracks    (orc)                  upper           randrm+tun        |
 |     5  barracks    (misc)                 middle          randrm+tun        |
-|     6  storage     (food/clothing)        middle          randrm+tun        |
-|     7  storage     (raw materials/money)  middle          randrm+tun        |
-|     8  storage     (armor/weapons)        Sauron's den    randrm, maze      |
+|     6  storage     (food/clothing)        middle          bsp               |
+|     7  storage     (raw materials/money)  middle          bsp               |
+|     8  storage     (armor/weapons)        Sauron's den    bsp               |
 |     9  workshops   (smiths/smelters)      Sauron's den    randrm, maze      |
 |    10  workshops   (food/clothing)        Sauron's den    randrm, maze      |
-|    11  laboratory  (poisons)              Sauron's den    bsp               |
-|    12  throneroom  (Sauron)               Sauron's den    randrm, maze      |
+|    11  laboratory  (poisons)              Sauron's den    randrm, maze      |
+|    12  throneroom  (Sauron)               Sauron's den    bsp               |
 |    13  laboratory  (dynamite)             Sauron's den    randrm, maze      |
 |    14  workshops   (breeding)             Sauron's den    randrm, maze      |
 |    15  workshops   (leatherworks/misc)    Sauron's den    randrm, maze      |
