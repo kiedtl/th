@@ -1,5 +1,6 @@
 mod kbd;
 mod state;
+mod utils;
 
 use std::{fs, fs::File};
 use ron::de::from_reader;
@@ -30,13 +31,6 @@ fn main() {
         println!("please report this issue upstream at {}.",
             "https://github.com/kiedtl/th");
     }));
-
-    unsafe {
-        tb_init();
-        tb_select_output_mode(TB_OUTPUT_TRUECOLOR);
-        tb_set_clear_attributes(TB_WHITE, TB_BLACK);
-        tb_clear();
-    }
 
     // check arguments
     let args = std::env::args().collect::<Vec<String>>();
@@ -94,6 +88,7 @@ dyn Error>>
     let mut materials: HashMap<String, MaterialInfo> = HashMap::new();
     load_info_files(&args[0], "../dat/mats/", &mut materials).unwrap();
 
+    utils::setup_tb();
     let mut st: State = State::new(map);
 
     draw_map(&st.dungeon, st.screen_width / 2, st.screen_height - 5,
@@ -123,20 +118,37 @@ dyn Error>>
 
     unsafe { tb_present(); }
 
+    // setup default keybindings
     let kbd = Keybindings::new();
-    loop {
-        let mut ev = NIL_RAW_EVENT;
-        let t = unsafe { tb_poll_event(&mut ev) };
 
-        if t == -1 { // TODO: check -2, -3
+    // main loop
+    loop {
+        let mut raw_ev = NIL_RAW_EVENT;
+        let t = unsafe { tb_poll_event(&mut raw_ev) };
+
+        if t == -1 {
             unsafe { tb_shutdown(); }
-            panic!("fatal termbox error");
+            eprintln!("error: fatal termbox error");
+            std::process::exit(1);
         }
 
         if t == (TB_EVENT_KEY as i32) {
-            match kbd.handle_ev(&ev, &mut st) {
-                Ok(_) => (),
-                Err(_) => break,
+            let ev = EventType::from_rawevent(&raw_ev)
+                .unwrap();
+            match ev {
+                EventType::Character(_)
+                | EventType::Key(_) => {
+                    match kbd.handle_ev(ev, &mut st) {
+                        Ok(_) => (),
+                        Err(_) => break,
+                    }
+                },
+                EventType::Resize(w, h) => {
+                    st.screen_height = h;
+                    st.screen_width = w;
+                    unsafe { tb_present(); }
+                },
+                _ => (),
             }
 
             draw_map(&st.dungeon, st.screen_width / 2, st.screen_height - 5,
@@ -145,9 +157,6 @@ dyn Error>>
                 &materials, st.current_x, st.current_y, st.level);
             unsafe { tb_present(); }
         }
-
-        // TODO: handle TB_EVENT_RESIZE
-        // TODO: handle TB_EVENT_MOUSE
     }
 
     unsafe { tb_shutdown(); }

@@ -213,8 +213,7 @@ impl Keybindings {
         table
     }
 
-    pub fn handle_ev(&self, r_ev: &RawEvent, st: &mut State) -> Result<(), String> {
-        let ev = EventType::from_rawevent(r_ev)?;
+    pub fn handle_ev(&self, ev: EventType, st: &mut State) -> Result<(), String> {
         let kbds = self.as_table();
 
         if kbds.contains_key(&ev) {
