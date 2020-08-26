@@ -17,4 +17,11 @@ impl Color {
             alpha: alpha,
         }
     }
+
+    pub fn as_u32(&self) -> u32 {
+        let mut rgb = self.red;
+        rgb = (rgb << 8) + self.green;
+        rgb = (rgb << 8) + self.blue;
+        rgb as u32
+    }
 }
