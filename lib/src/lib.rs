@@ -5,6 +5,7 @@ pub mod dun_s2;
 pub mod dungeon;
 pub mod features;
 pub mod id;
+pub mod info_files;
 pub mod items;
 pub mod material;
 pub mod math;

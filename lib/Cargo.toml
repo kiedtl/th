@@ -5,18 +5,20 @@ authors = ["Kiëd Llaentenn <kiedtl@tilde.team>"]
 edition = "2018"
 
 [dependencies]
-rand = "0.7.0"
+walkdir = "2"
+ron = "0.6"
+rand = "0.7"
 chrono = "0.4"
 
 [dependencies.noise]
-version = "0.6.0"
+version = "0.6"
 default-features = false
 
 # used for the Saturating* traits
 # just to make my short life easier
 [dependencies.num]
-version = "0.3.0"
+version = "0.3"
 
 [dependencies.serde]
-version = "1.0.0"
+version = "1.0"
 features = ["derive"]

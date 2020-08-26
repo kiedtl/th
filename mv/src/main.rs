@@ -2,19 +2,17 @@ mod kbd;
 mod state;
 mod utils;
 
-use std::{fs, fs::File};
-use ron::de::from_reader;
-use lib::dungeon::*;
-use walkdir::WalkDir;
-use lib::material::*;
-use lib::id::*;
-use lib::colors::*;
-use lib::dun_s1::*;
-use lib::dun_s2::*;
-use std::error::Error;
-use std::collections::HashMap;
 use crate::state::*;
 use crate::kbd::*;
+use lib::colors::*;
+use lib::dungeon::*;
+use lib::dun_s1::*;
+use lib::dun_s2::*;
+use lib::info_files::*;
+use lib::material::*;
+use ron::de::from_reader;
+use std::collections::HashMap;
+use std::fs::File;
 use termbox_sys::*;
 
 const NIL_RAW_EVENT: RawEvent = RawEvent { etype: 0, emod: 0, key: 0, ch: 0, w: 0, h: 0, x: 0, y: 0 };
@@ -40,7 +38,7 @@ fn main() {
         std::process::exit(1);
     }
 
-    // try to load configuration
+    // try to load map
     let input_path = &args[1];
     let fmap = match File::open(input_path) {
         Ok(d) => d,
@@ -50,7 +48,7 @@ fn main() {
         },
     };
 
-    // parse configuration
+    // parse map
     let map: Dungeon = match from_reader(fmap) {
         Ok(x) => x,
         Err(e) => {
@@ -59,34 +57,7 @@ fn main() {
         },
     };
 
-    fn load_info_files<T>(arg0: &str, path: &str, accm: &mut HashMap<String, T>) -> Result<(), Box<
-dyn Error>>
-    where
-        T: for<'a> serde::Deserialize<'a> + Id + Clone
-    {
-        for entry_ in WalkDir::new(path) {
-            let entry = entry_.unwrap();
-            if fs::metadata(entry.path()).unwrap().is_dir() {
-                continue;
-            }
-            let info_file = File::open(entry.path()).unwrap();
-            let data: Result<T, ron::error::Error> = from_reader(info_file);
-            match data {
-                Ok(x)  => {
-                    let idxr = x.id();
-                    *accm.entry(idxr).or_insert(x) = x.clone();
-                },
-                Err(e) => {
-                    eprintln!("{}: failed to load info file: {}: {}",
-                        arg0, entry.path().display(), e);
-                },
-            }
-        }
-        Ok(())
-    }
-
-    let mut materials: HashMap<String, MaterialInfo> = HashMap::new();
-    load_info_files(&args[0], "../dat/mats/", &mut materials).unwrap();
+    let materials = load_info_files("../dat/mats/").unwrap();
 
     utils::setup_tb();
     let mut st: State = State::new(map);
