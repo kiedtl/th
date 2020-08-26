@@ -5,10 +5,13 @@ authors = ["Kiëd Llaentenn <kiedtl@tilde.team>"]
 edition = "2018"
 
 [dependencies]
+backtrace = "0.3"
 ron = "0.6"
-pancurses = "0.16"
 serde = "1.0"
 walkdir = "2"
+
+[dependencies.termbox-sys]
+path = "../termbox"
 
 [dependencies.lib]
 path = "../lib"
