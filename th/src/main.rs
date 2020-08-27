@@ -1,13 +1,13 @@
 mod kbd;
 mod state;
 mod tb;
+mod message;
+mod priority;
 
+use crate::tb::*;
 use crate::state::*;
 use crate::kbd::*;
-use lib::colors::*;
 use lib::dungeon::*;
-use lib::dun_s1::*;
-use lib::dun_s2::*;
 use lib::info_files::*;
 use lib::material::*;
 use ron::de::from_reader;
@@ -55,15 +55,17 @@ fn main() {
         },
     };
 
-    let materials = load_info_files("../dat/mats/").unwrap();
+    let materials: HashMap<String, MaterialInfo> =
+        load_info_files("../dat/mats/").unwrap();
 
-    utils::setup_tb();
-    let mut st: State = State::new(map);
+    tb_setup();
+    let mut st: State = State::new(map, (0, 0));
 
     unsafe { tb_present(); }
 
     // setup default keybindings
     let kbd = Keybindings::new();
+    let keybinds = kbd.as_table();
 
     // main loop
     loop {
@@ -73,6 +75,7 @@ fn main() {
         if t == -1 {
             unsafe { tb_shutdown(); }
             eprintln!("error: fatal termbox error");
+            // TODO: save
             std::process::exit(1);
         }
 
@@ -82,10 +85,19 @@ fn main() {
             match ev {
                 EventType::Character(_)
                 | EventType::Key(_) => {
-                    //match kbd.handle_ev(ev, &mut st) {
-                        //Ok(_) => (),
-                        //Err(_) => break,
-                    //}
+                    if !keybinds.contains_key(&ev) {
+                        continue;
+                    }
+
+                    let action = keybinds[&ev];
+                    match action {
+                        KeybindingAction::Quit => {
+                            // TODO: saves
+                            unsafe { tb_shutdown(); }
+                            std::process::exit(0);
+                        },
+                        _ => (),
+                    }
                 },
                 EventType::Resize(w, h) => {
                     // TODO: redraw screen
@@ -95,5 +107,6 @@ fn main() {
         }
     }
 
+    #[allow(unreachable_code)]
     unsafe { tb_shutdown(); }
 }

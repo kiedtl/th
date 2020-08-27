@@ -221,8 +221,14 @@ fn tile_as_cell(tile: &DungeonTile, materials: &HashMap<String, MaterialInfo>) -
             glyph = tile_material.block_glyph;
         },
         TileType::Floor => {
-            glyph = '+';
-            bg = Color::new(0, 0, 0, 0);
+            glyph = ' ';
+            //bg = Color::new(0, 0, 0, 0);
+            bg = Color {
+                red: bg.red / 32,
+                green: bg.green / 32,
+                blue: bg.blue / 32,
+                alpha: bg.alpha,
+            };
         },
     }
 

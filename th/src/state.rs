@@ -1,4 +1,4 @@
-use termbox_sys::*;
+use crate::message::*;
 use lib::dungeon::Dungeon;
 
 // this contains the entire state of the game
@@ -18,7 +18,7 @@ impl State {
             dungeon: dungeon,
             player: player,
             level: 0,
-            messages: Vec::new(),
+            messages: Vec::<Message>::new(),
         }
     }
 }
