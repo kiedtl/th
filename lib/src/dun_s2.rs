@@ -11,7 +11,7 @@ pub struct DungeonTile {
 
     // TODO: define Item structs
     pub items: Vec<u8>,
-    pub mobs: Vec<Mob>,
+    pub mobs: Option<Mob>,
 
     // in kelvin, of course
     pub temperature: f64,
@@ -36,7 +36,7 @@ impl DungeonS2 {
                 let tile = DungeonTile {
                     tiletype: dg.d[y][x],
                     tile_material: "".to_string(),
-                    items: vec![], mobs: vec![],
+                    items: vec![], mobs: None,
                     temperature: 303.15, // 85°F
                 };
 

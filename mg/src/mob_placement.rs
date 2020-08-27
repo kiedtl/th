@@ -92,7 +92,7 @@ impl<R: Rng> MobPlacer<'_, R> {
             }
 
             if let Some(template) = chosen_mob {
-                self.map.d[y][x].mobs.push(template.generate_mob(self.rng));
+                self.map.d[y][x].mobs = Some(template.generate_mob(self.rng));
             } else {
                 continue;
             }

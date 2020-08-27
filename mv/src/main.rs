@@ -226,8 +226,7 @@ fn tile_as_cell(tile: &DungeonTile, materials: &HashMap<String, MaterialInfo>) -
         },
     }
 
-    if tile.mobs.len() > 0 {
-        let mob = &tile.mobs[0];
+    if let Some(mob) = &tile.mobs {
         bg = Color::new(0, 0, 0, 0);
         glyph = mob.unicode_glyph;
         if let Some(mob_fg) = mob.glyph_fg {
