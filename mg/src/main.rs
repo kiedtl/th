@@ -11,7 +11,6 @@ use crate::cellular::*;
 use crate::drunk::*;
 use crate::dunspec::*;
 use crate::maze::*;
-use lib::colors::*;
 use lib::dun_s1::*;
 use lib::dun_s2::*;
 use lib::dungeon::*;
@@ -130,43 +129,4 @@ fn main() {
 
     let dungeon = Dungeon::from_dungeon_s2(config.world_name, dungeons_s2);
     fs::write("map.ron", ron::to_string(&dungeon).unwrap().as_bytes()).unwrap();
-}
-
-fn display(map: &DungeonS2, materials: &HashMap<String, MaterialInfo>) {
-    for y in 0..(map.height) {
-        for x in 0..(map.width) {
-            let tile_material = &materials[&map.d[y][x].tile_material];
-            let mut bg = tile_material.color_bg;
-            let mut fg = tile_material.color_fg;
-            let mut glyph: char;
-
-            match map.d[y][x].tiletype {
-                TileType::Debug
-                | TileType::Wall  => {
-                    glyph = tile_material.block_glyph;
-                },
-                TileType::Floor => {
-                    glyph = '+';
-                    bg = Color::new(0, 0, 0, 0);
-                },
-            }
-
-            if map.d[y][x].mobs.len() > 0 {
-                let mob = &map.d[y][x].mobs[0];
-                bg = Color::new(0, 0, 0, 0);
-                glyph = mob.unicode_glyph;
-                if let Some(mob_fg) = mob.glyph_fg {
-                    fg = mob_fg;
-                } else {
-                    fg = Color::new(0, 0, 0, 0);
-                }
-            }
-
-            print!("{}[38;2;{};{};{}m{}[48;2;{};{};{}m{}{}[m",
-                0x1b as char, fg.red, fg.green, fg.blue,
-                0x1b as char, bg.red, bg.green, bg.blue,
-                glyph, 0x1b as char);
-        }
-        print!("\n{}[m", 0x1b as char);
-    }
 }
