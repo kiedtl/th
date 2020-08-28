@@ -35,12 +35,14 @@ MobTemplate(
 	misc_lines: [
 		"get a life loser",
 		"lmaooooo",
-		"lmaooooooooooo",
-		"LMAOOOOOOOOOOO",
+		"lmaoooooooooo",
+		"LMAOOOOOOOOOOOOOOOO",
+		"LMFAOOOOOOOOOOOOOOOOOOO",
 		// TODO
 	],
 	farewells: [
 		// TODO
+	       "fuck off",
 	],
 	strength: Random(7, 8),
 	agility: Random(128, 129),
@@ -52,8 +54,8 @@ MobTemplate(
 	intelligence: Random(16, 19),
 	aggressive: Random(9, 12),
 	movement: Active,
-	age: Random(10, 15),
-	max_age: Some(Random(16, 18)),
+	age: Random(10, 15), // most trolls are between 10 and 15 years of age
+	max_age: Some(Random(16, 18)), // ...and stop trolling when they mature (some trolls never mature)
 	summoner: false,
 	summonable: true,
 	undead: false,
