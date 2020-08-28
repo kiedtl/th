@@ -10,5 +10,6 @@ pub mod items;
 pub mod material;
 pub mod math;
 pub mod mob;
+pub mod player;
 pub mod rect;
 pub mod value;

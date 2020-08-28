@@ -27,6 +27,8 @@ use std::{fs, fs::File};
 use ron::de::from_reader;
 use walkdir::WalkDir;
 
+const PLAYER_MOB: &str = "elf";
+
 fn main() {
     let mut rng = rand::thread_rng();
     let mut materials:   HashMap<String, MaterialInfo> = HashMap::new();
@@ -127,6 +129,10 @@ fn main() {
         }
     }
 
-    let dungeon = Dungeon::from_dungeon_s2(config.world_name, dungeons_s2);
+    // ensure that the info file isn't missing
+    assert!(mobs.contains_key(PLAYER_MOB));
+    let dungeon = Dungeon::from_dungeon_s2(config.world_name, &mut dungeons_s2,
+        &mut rng, &mobs[PLAYER_MOB]);
+
     fs::write("map.ron", ron::to_string(&dungeon).unwrap().as_bytes()).unwrap();
 }
