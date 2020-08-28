@@ -1,31 +1,5 @@
 use termbox_sys::*;
 
-#[inline]
-pub fn tb_setup() {
-    match unsafe { tb_init() } {
-        TB_EFAILED_TO_OPEN_TTY => {
-            eprintln!("error: could not open terminal");
-            std::process::exit(1);
-        },
-        TB_EUNSUPPORTED_TERMINAL => {
-            eprintln!("error: unsupported terminal");
-            eprintln!("hint: try using another terminal (such as alacritty)");
-            std::process::exit(1);
-        },
-        TB_EPIPE_TRAP_ERROR => {
-            eprintln!("error: could not initialize screen");
-            std::process::exit(1);
-        },
-        _ => (),
-    }
-
-    unsafe {
-        tb_select_output_mode(TB_OUTPUT_TRUECOLOR);
-        tb_set_clear_attributes(TB_WHITE, TB_BLACK);
-        tb_clear();
-    }
-}
-
 #[derive(Copy, Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 pub enum EventType {
@@ -54,4 +28,60 @@ impl EventType {
             _ => Err(format!("invalid event type: {}", ev.etype)),
         }
     }
+}
+
+pub fn tb_put_string(
+    max_x: i32, max_y: i32,
+    col: i32, row: i32,
+    str: &str,
+    fg: u32, bg: u32,
+    wrap: bool
+) -> (i32, i32) {
+    let mut ccol = col;
+    let mut crow = row;
+    for c in str.chars() {
+        unsafe {
+            tb_put_cell(ccol, crow, &RawCell {
+                ch: c as u32,
+                fg: fg, bg: bg
+            });
+        }
+
+        if (ccol + 1) == (max_x - 1) {
+            if wrap && crow + 1 != max_y {
+                crow += 1;
+                ccol = col;
+            } else {
+                let dot = RawCell {
+                    ch: '.' as u32,
+                    fg: fg, bg: bg,
+                };
+
+                // draw some nice ellipses
+                unsafe {
+                    tb_put_cell(ccol - 2, crow, &dot);
+                    tb_put_cell(ccol - 1, crow, &dot);
+                    tb_put_cell(ccol - 0, crow, &dot);
+                }
+
+                break;
+            }
+        } else {
+            ccol += 1;
+        }
+    }
+
+    // clear to the end of the line
+    let clear_cell = RawCell {
+        ch: ' ' as u32,
+        fg: 0xffffff, bg: 0x000000,
+    };
+
+    for ncol in ccol..max_x {
+        unsafe {
+            tb_put_cell(ncol, row, &clear_cell);
+        }
+    }
+
+    (crow + 1, ccol)
 }

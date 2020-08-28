@@ -1,12 +1,14 @@
+mod display;
 mod kbd;
-mod state;
-mod tb;
 mod message;
 mod priority;
+mod state;
+mod tb;
 
-use crate::tb::*;
-use crate::state::*;
+use crate::display::*;
 use crate::kbd::*;
+use crate::state::*;
+use crate::tb::*;
 use lib::dungeon::*;
 use lib::info_files::*;
 use lib::material::*;
@@ -58,14 +60,18 @@ fn main() {
     let materials: HashMap<String, MaterialInfo> =
         load_info_files("../dat/mats/").unwrap();
 
-    tb_setup();
-    let mut st: State = State::new(map, (0, 0));
+    // game state
+    let mut st: State = State::new(map);
 
-    unsafe { tb_present(); }
-
-    // setup default keybindings
+    // keybindings
     let kbd = Keybindings::new();
     let keybinds = kbd.as_table();
+
+    // termbox display
+    let display = Display::new(&st, DisplayMode::Console, &materials);
+
+    display.draw();
+    display.present();
 
     // main loop
     loop {
@@ -73,7 +79,7 @@ fn main() {
         let t = unsafe { tb_poll_event(&mut raw_ev) };
 
         if t == -1 {
-            unsafe { tb_shutdown(); }
+            display.close();
             eprintln!("error: fatal termbox error");
             // TODO: save
             std::process::exit(1);
@@ -93,20 +99,23 @@ fn main() {
                     match action {
                         KeybindingAction::Quit => {
                             // TODO: saves
-                            unsafe { tb_shutdown(); }
-                            std::process::exit(0);
+                            break; // close display and exit
                         },
                         _ => (),
                     }
                 },
                 EventType::Resize(w, h) => {
-                    // TODO: redraw screen
+                    display.draw();
+                    display.present();
                 },
                 _ => (),
             }
+
+            display.draw();
+            display.present();
         }
     }
 
     #[allow(unreachable_code)]
-    unsafe { tb_shutdown(); }
+    display.close();
 }
