@@ -40,3 +40,4 @@
     - potions (narcotics, alcohol, poison, steroids, drugs)
     - id cards
   - create stockpiles
+  - stairs and portals
