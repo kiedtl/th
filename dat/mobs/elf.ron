@@ -1,0 +1,55 @@
+// defines an elf thrall
+// also is the player mob type
+MobTemplate(
+	id: "elf",
+	class: MiddleMob,
+	short_name: "elf",
+	long_name: "high-elf",
+	tagline: "",
+	description: "Originally one of the Ñoldorin warriors from Aman, this elf is doomed to spend the rest of its days laboring in the Angband mines.",
+	allowed_genders: [(Male, 50), (Female, 1)], // I don't know if there are many female elf warriors
+	body: [Eye, Eye, Ear, Ear, Head,
+	Hand, Hand, Foot, Foot],
+	ascii_glyph: '@',
+	unicode_glyph: '@',
+	glyph_fg: Some(
+		Color(
+			red: 255, blue: 255,
+			green: 255, alpha: 0,
+		)
+	),
+	alignment: NeutralHostile,
+	height: Random(198, 228), // between 6.5ft and 7.5ft
+	width: Random(30, 45), // emaciated I'm sure
+	weight: Random(81, 113), // ^^
+	composition: "elf flesh",
+	normal_body_temperature: Random(311, 318),
+	min_body_temperature: Random(292, 297),
+	max_body_temperature: Random(319, 322),
+	needs_food: true,
+	needs_drink: true,
+	needs_sleep: true,
+	greetings: [],
+	misc_lines: [],
+	farewells: [],
+	strength: Random(10, 15),
+	agility: Random(25, 32),
+	endurance: Random(21, 28),
+	metabolism: Random(7, 9),
+	willpower: Manual(9),
+	focus: Random(7, 9),
+	bravery: Random(10, 32),
+	intelligence: Random(18, 24),
+	aggressive: Random(5, 6), // being slaves I don't think they'd be very aggressive
+	movement: Active, // being slaves, they had better be active
+	age: Random(45, 3500), // Feanaro was 3142 years when he died...
+	max_age: None,
+	summoner: false,
+	summonable: false,
+	undead: false,
+	opposed_to_life: false,
+	necromancer: Manual(0),
+	vampire: false,
+	is_unique: false,
+	max_in_map: 50,
+)
