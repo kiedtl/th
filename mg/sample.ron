@@ -4,8 +4,8 @@ DungeonSpecification(
     world_name: "Stiapocumne",
     layers: [
         LayerSpecification(
-            levels: 2,
-            dimensions: (200, 100),
+            levels: 1,
+            dimensions: (100, 50),
             composition: MineralPlacementOptions(
                 noise_exponent: 5.12,
                 allowed_stone: IgneousExtrusive,
