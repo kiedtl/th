@@ -38,6 +38,7 @@ pub enum MobMovement {
     Sedentary,
     LightlyActive,
     Active,
+    VeryActive,
 }
 
 #[derive(Copy, Clone, Debug, PartialEq, Serialize, Deserialize)]

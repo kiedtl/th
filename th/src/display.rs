@@ -20,7 +20,7 @@ impl DisplayWindow {
     fn dimensions(&self) -> (i32, i32, i32, i32) {
         match self {
             DisplayWindow::Map => {
-                (0, 0, unsafe { tb_width() } - 30, unsafe { tb_height() } - 10)
+                (0, 0, unsafe { tb_width() } - 30, unsafe { tb_height() } - 8)
             },
             DisplayWindow::Message => {
                 let (_, _, map_x, map_y) = DisplayWindow::Map.dimensions();
@@ -43,12 +43,11 @@ pub enum DisplayMode {
 pub struct Display<'a> {
     mode: DisplayMode,
     materials: &'a HashMap<String, MaterialInfo>,
-    st: &'a State,
 }
 
 impl Display<'_> {
     pub fn new<'a>(
-        st: &'a State, mode: DisplayMode,
+        mode: DisplayMode,
         mats: &'a HashMap<String, MaterialInfo>,
     ) -> Display<'a> {
         match unsafe { tb_init() } {
@@ -74,7 +73,7 @@ impl Display<'_> {
             tb_clear();
         }
 
-        Display { mode: mode, materials: mats, st: st }
+        Display { mode: mode, materials: mats }
     }
 
     pub fn present(&self) {
@@ -83,42 +82,47 @@ impl Display<'_> {
         }
     }
 
-    pub fn draw(&self) {
+    pub fn draw(&self, st: &State) {
         match &self.mode {
             DisplayMode::SDL => unimplemented!(),
-            DisplayMode::Console => self.draw_console(),
+            DisplayMode::Console => self.draw_console(st),
         }
     }
 
-    pub fn draw_console(&self) {
-        self.draw_console_map();
-        self.draw_console_messages();
+    pub fn draw_console(&self, st: &State) {
+        self.draw_console_map(st);
+        self.draw_console_messages(st);
     }
 
-    pub fn draw_console_messages(&self) {
-        let (mut xctr, mut yctr, max_x, max_y) =
+    pub fn draw_console_messages(&self, st: &State) {
+        let (xctr, mut yctr, max_x, max_y) =
             DisplayWindow::Message.dimensions();
         let mut msgctr = 0;
+        let displayed_min = st.messages.len()
+            .saturating_sub(((max_y - yctr) - 1) as usize);
+        let messages = &st.messages[displayed_min..st.messages.len()];
 
-        while yctr < max_y && msgctr < self.st.messages.len() {
-            let message = &self.st.messages[msgctr];
+        while yctr < max_y && msgctr < messages.len() {
+            let message = &messages[msgctr];
             let p = message.priority.as_usize();
 
-            let tocol = |p| return clamp(p * 40, 0, 255);
-            let fg = Color::new(tocol(p), tocol(p), tocol(p), 0)
-                .as_u32();
+            let tocol = |p, i| return clamp(p * i, 0, 255);
+            let fg = Color::new(tocol(p, 65), tocol(p, 60),
+                tocol(p, 60), 0).as_u32();
             let bg = Color::new(0, 0, 0, 0).as_u32();
 
+            // why the f does termbox not support TB_BOLD with
+            // true color?!
             let res = tb_put_string(max_x, max_y, xctr, yctr,
-                &self.st.messages[msgctr].text, fg, bg, true);
+                &message.text, 0xffffff, bg, false);
             yctr = res.0; msgctr += 1;
         }
     }
 
-    pub fn draw_console_map(&self) {
-        let level = &self.st.dungeon.levels[self.st.dungeon.player.level];
-        let cur_y = self.st.dungeon.player.coords.0 as i32;
-        let cur_x = self.st.dungeon.player.coords.1 as i32;
+    pub fn draw_console_map(&self, st: &State) {
+        let level = &st.dungeon.levels[st.dungeon.player.level];
+        let cur_y = st.dungeon.player.coords.0 as i32;
+        let cur_x = st.dungeon.player.coords.1 as i32;
 
         // xctr/yctr is the current position on the screen
         // max_x/max_y is the maximum size of a window

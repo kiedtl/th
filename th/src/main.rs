@@ -1,3 +1,4 @@
+mod coord;
 mod display;
 mod kbd;
 mod message;
@@ -68,9 +69,9 @@ fn main() {
     let keybinds = kbd.as_table();
 
     // termbox display
-    let display = Display::new(&st, DisplayMode::Console, &materials);
+    let mut display = Display::new(DisplayMode::Console, &materials);
 
-    display.draw();
+    display.draw(&st);
     display.present();
 
     // main loop
@@ -101,17 +102,17 @@ fn main() {
                             // TODO: saves
                             break; // close display and exit
                         },
-                        _ => (),
+                        _ => st.handle_action(action),
                     }
                 },
                 EventType::Resize(w, h) => {
-                    display.draw();
+                    display.draw(&st);
                     display.present();
                 },
                 _ => (),
             }
 
-            display.draw();
+            display.draw(&st);
             display.present();
         }
     }
