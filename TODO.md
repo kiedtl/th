@@ -1,10 +1,10 @@
 # TODO
 
 ## th (the actual game)
-- very basic implementation
-  - simple movement around, thats all
-    - HJKLYUBN keys
-    - Ctrl-S to save
+- very basic monster AI implementation
+  - if next to player; attack, if not, stay still
+    - if heavily wounded, run away
+    - once recovered of wounds, come back
 
 ## mv (mapview)
 - diag. movement with YUBN keys
