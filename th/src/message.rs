@@ -1,4 +1,4 @@
-use crate::priority::*;
+use lib::priority::*;
 
 // a game message
 // e.g. "the kobold strikes you with her lead mace!"

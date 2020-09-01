@@ -1,15 +1,12 @@
 use crate::state::*;
-use lib::mob::*;
 use lib::dun_s1::*;
-use lib::math::*;
-use crate::coord::*;
 use doryen_fov::{
     FovAlgorithm,
     FovRecursiveShadowCasting,
     MapData
 };
 
-const PLAYER_VIEW_RADIUS: usize = 20;
+const PLAYER_VIEW_RADIUS: usize = 5;
 const MAX_PLAYER_MEMORY: usize = 1024 * 1024 * 1024;
 
 pub fn player_tick(st: &mut State) {
@@ -24,10 +21,10 @@ pub fn player_tick(st: &mut State) {
     let mut fov = FovRecursiveShadowCasting::new();
     let mut map = MapData::new(map_width, map_height);
 
-    let starty = player_y.saturating_sub(map_height / 2);
-    let endy   = clamp(player_y + (map_height / 2), 0, map_height);
-    let startx = player_x.saturating_sub(map_width / 2);
-    let endx   = clamp(player_x + (map_width / 2), 0, map_width);
+    let starty = 0;//player_y.saturating_sub(map_height / 2);
+    let endy   = map_height;//clamp(player_y + (map_height / 2), 0, map_height);
+    let startx = 0;//player_x.saturating_sub(map_width / 2);
+    let endx   = map_width;//clamp(player_x + (map_width / 2), 0, map_width);
 
     for y in starty..endy {
         for x in startx..endx {

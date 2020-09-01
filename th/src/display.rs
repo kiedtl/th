@@ -4,7 +4,6 @@ use lib::colors::*;
 use lib::dun_s1::*;
 use lib::dun_s2::*;
 use lib::material::*;
-use lib::math::*;
 use std::collections::HashMap;
 use termbox_sys::*;
 
@@ -104,11 +103,12 @@ impl Display<'_> {
 
         while yctr < max_y && msgctr < messages.len() {
             let message = &messages[msgctr];
-            let p = message.priority.as_usize();
 
-            let tocol = |p, i| return clamp(p * i, 0, 255);
-            let fg = Color::new(tocol(p, 65), tocol(p, 60),
-                tocol(p, 60), 0).as_u32();
+            //let p = message.priority.as_usize();
+            //let tocol = |p, i| return clamp(p * i, 0, 255);
+            //let fg = Color::new(tocol(p, 65), tocol(p, 60),
+                //tocol(p, 60), 0).as_u32();
+
             let bg = Color::new(0, 0, 0, 0).as_u32();
 
             // why the f does termbox not support TB_BOLD with

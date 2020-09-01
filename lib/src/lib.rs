@@ -11,5 +11,6 @@ pub mod material;
 pub mod math;
 pub mod mob;
 pub mod player;
+pub mod priority;
 pub mod rect;
 pub mod value;
