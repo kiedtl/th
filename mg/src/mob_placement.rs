@@ -6,11 +6,12 @@ use lib::value;
 use rand::prelude::*;
 use serde::Deserialize;
 use std::vec::Vec;
+use std::collections::HashMap;
 
 #[derive(Clone, Debug, PartialEq, Deserialize)]
 pub struct MobPlacementOptions {
     noise_exponent: f64,
-    allowed_classes: Vec<MobClass>,
+    allowed_classes: HashMap<MobClass, usize>,
     noise_algorithm: utils::NoiseAlgorithm,
     noise_overlap: usize, // TODO
     noise_seed: value::Value<u32>,
@@ -43,13 +44,16 @@ impl<R: Rng> MobPlacer<'_, R> {
         // remove invalid mobs
         for mob_i in 0..mobs.len() {
             let mob = &mobs[mob_i];
-            if !self.options.allowed_classes.contains(&mob.class) {
+            if !self.options.allowed_classes.contains_key(&mob.class) {
                 mobs.remove(mob_i);
             }
         }
 
         // track how many of each mob is in the map
         let mut mob_ctr: Vec<usize> = vec![0; mobs.len()];
+
+        // track how many of each mob **class** is in the map
+        let mut mob_class_ctr: HashMap<MobClass, usize> = HashMap::new();
 
         // get list of all tiles in the map
         let mut coords: Vec<(usize, usize)> = Vec::new();
@@ -82,9 +86,12 @@ impl<R: Rng> MobPlacer<'_, R> {
             let mut chosen_mob: Option<MobTemplate> = None;
             while value > 0 {
                 if mobs.len() >= value {
-                    if mob_ctr[value - 1] < mobs[value - 1].max_in_map {
-                        chosen_mob = Some(mobs[value - 1].clone());
-                        mob_ctr[value - 1] += 1;
+                    let class = mobs[value - 1].class;
+                    if mob_ctr[value - 1] < mobs[value - 1].max_in_map &&
+                        *mob_class_ctr.entry(class).or_insert(0) < self.options.allowed_classes[&class] {
+                            chosen_mob = Some(mobs[value - 1].clone());
+                            mob_ctr[value - 1] += 1;
+                            *mob_class_ctr.entry(class).or_insert(0) += 1;
                     }
                 }
 

@@ -15,7 +15,9 @@ DungeonSpecification(
             ),
             inhabitants: MobPlacementOptions(
                 noise_exponent: 1.28,
-                allowed_classes: [MiddleMob],
+                allowed_classes: {
+                    ThrallMob: 24, MiddleMob: 100,
+                },
                 noise_algorithm: Perlin,
                 noise_overlap: 6,
                 noise_seed: Random(0, 64),

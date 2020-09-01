@@ -22,8 +22,9 @@ pub enum MobGender {
     Female,
 }
 
-#[derive(Copy, Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum MobClass {
+    ThrallMob,
     UpperMob,
     MiddleMob,
     SauronsDenMob,
