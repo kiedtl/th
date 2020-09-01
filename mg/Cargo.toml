@@ -7,12 +7,12 @@ edition = "2018"
 [dependencies]
 # random number generation,
 # used heavily during map generation
-rand = "0.7.0"
+rand = "0.7"
 
 # used for parsing the dungeon
 # info file
-serde = "1.0.0"
-ron = "0.6.0"
+serde = "1.0"
+ron = "0.6"
 
 # used to traverse data directories and get
 # item definitions
@@ -21,13 +21,13 @@ walkdir = "2"
 # Perlin/OpenSimplex noise generator used for
 # making clusters/"veins" of minerals
 [dependencies.noise]
-version = "0.6.0"
+version = "0.6"
 default-features = false
 
 # used for the Saturating* traits
 # just to make my short life easier
 [dependencies.num]
-version = "0.3.0"
+version = "0.3"
 
 [dependencies.lib]
 path = "../lib"
