@@ -5,6 +5,7 @@ authors = ["Kiëd Llaentenn <kiedtl@tilde.team>"]
 edition = "2018"
 
 [dependencies]
+rand = "0.7"
 doryen-fov = "*"
 backtrace = "0.3"
 ron = "0.6"

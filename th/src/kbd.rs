@@ -8,6 +8,7 @@ pub enum KeybindingAction {
     LevelUp,
     LevelDown,
     Move(Direction),
+    Wait,
     Save,
     Quit,
 }
@@ -61,6 +62,12 @@ impl Keybindings {
             Keybinding {
                 trigger: EventType::Character('n'),
                 action: KeybindingAction::Move(Direction::SouthEast),
+            },
+
+            // wait
+            Keybinding {
+                trigger: EventType::Character('.'),
+                action: KeybindingAction::Wait,
             },
 
             // save

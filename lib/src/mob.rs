@@ -42,6 +42,19 @@ pub enum MobMovement {
     VeryActive,
 }
 
+impl MobMovement {
+    pub fn chance_of_movement(&self) -> usize {
+        // return chance in 100 of mob moving
+        match self {
+            MobMovement::Immobile => 0,
+            MobMovement::Sedentary => 10,
+            MobMovement::LightlyActive => 30,
+            MobMovement::Active => 80,
+            MobMovement::VeryActive => 100,
+        }
+    }
+}
+
 #[derive(Copy, Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub enum MobAlignment {
     Hostile,        // the creatures is hostile to the player
@@ -219,8 +232,20 @@ impl MobTemplate {
             max_age: max_age,
             undead: self.undead,
             opposed_to_life: self.opposed_to_life,
+            current_mode: MobMode::Wander,
         }
     }
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub enum MobMode {
+    AttackMob,
+    Eat,
+    Drink,
+    Sleep,
+    CompleteJob,
+    FindJob,
+    Wander,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -260,4 +285,6 @@ pub struct Mob {
 
     pub undead: bool,
     pub opposed_to_life: bool,
+
+    pub current_mode: MobMode,
 }

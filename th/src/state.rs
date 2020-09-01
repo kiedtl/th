@@ -63,6 +63,7 @@ impl State {
                         level, new_pos, true).unwrap();
                 }
             },
+            KeybindingAction::Wait => (),
             _ => (),
         }
     }

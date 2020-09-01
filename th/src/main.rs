@@ -6,13 +6,12 @@ mod state;
 mod tb;
 mod tick;
 
-use crate::message::*;
 use crate::display::*;
 use crate::kbd::*;
 use crate::state::*;
 use crate::tb::*;
 use lib::info_files::*;
-use lib::priority::*;
+use lib::mob::*;
 use lib::material::*;
 use termbox_sys::*;
 use std::collections::HashMap;
@@ -41,6 +40,9 @@ fn main() {
     let materials: HashMap<String, MaterialInfo> =
         load_info_files("../dat/mats/").unwrap();
 
+    let mobs: HashMap<String, MobTemplate> =
+        load_info_files("../dat/mobs/").unwrap();
+
     // try to load map
     let mut st = match State::from_file(&args[1]) {
         Ok(s) => s,
@@ -55,6 +57,8 @@ fn main() {
     // keybindings
     let kbd = Keybindings::new();
     let keybinds = kbd.as_table();
+
+    let mut rng = rand::thread_rng();
 
     // termbox display
     let display = Display::new(DisplayMode::Console, &materials);
@@ -103,6 +107,7 @@ fn main() {
                 _ => (),
             }
 
+            tick::mobs_tick(&mut st, &mobs, &mut rng);
             tick::player_tick(&mut st);
             display.draw(&st);
             display.present();

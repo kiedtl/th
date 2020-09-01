@@ -1,13 +1,67 @@
 use crate::state::*;
+use crate::coord::*;
+use rand::prelude::*;
 use lib::dun_s1::*;
+use lib::mob::*;
 use doryen_fov::{
     FovAlgorithm,
     FovRecursiveShadowCasting,
     MapData
 };
+use std::collections::HashMap;
 
 const PLAYER_VIEW_RADIUS: usize = 5;
 const MAX_PLAYER_MEMORY: usize = 1024 * 1024 * 1024;
+
+pub fn mobs_tick<R>(st: &mut State, mobs: &HashMap<String, MobTemplate>, rng: &mut R)
+where
+    R: Rng
+{
+    for lvl in 0..st.dungeon.levels.len() {
+        for y in 0..st.dungeon.levels[lvl].height {
+            for x in 0..st.dungeon.levels[lvl].width {
+                if (y, x) == st.dungeon.player.coords {
+                    continue;
+                }
+
+                let tile = st.dungeon.at(lvl, (y, x));
+
+                // is there even a mob here
+                let mob: Mob;
+                let mobtemplate: &MobTemplate;
+                if let Some(m) = tile.mobs {
+                    mob = m;
+                    mobtemplate = &mobs[&mob.from_mob_template];
+                } else {
+                    continue;
+                }
+
+                // will the mob move on this round?
+                if rng.gen_range(0, 100) > mobtemplate.movement.chance_of_movement() {
+                    continue; // nope
+                }
+
+                let cur_pos = Coord::from((y, x));
+
+                // get random direction
+                let new_pos = cur_pos.neighbor_in_direction(rng.gen())
+                    .clamp_x(st.dungeon.levels[lvl].width)
+                    .clamp_y(st.dungeon.levels[lvl].height)
+                    .as_yx();
+
+                if st.dungeon.at(lvl, new_pos).tiletype == TileType::Wall {
+                    // do nothing
+                    // in the future, though, we'll check if the player
+                    // has a pickaxe in his inventory and if so, demolish
+                    // the wall
+                } else {
+                    st.dungeon.move_mob(lvl, cur_pos.as_yx(),
+                        lvl, new_pos, true).unwrap();
+                }
+            }
+        }
+    }
+}
 
 pub fn player_tick(st: &mut State) {
     let player = &mut st.dungeon.player;

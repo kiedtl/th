@@ -382,6 +382,7 @@ dependencies = [
  "backtrace",
  "doryen-fov",
  "lib",
+ "rand 0.7.3",
  "ron",
  "serde",
  "termbox-sys",
