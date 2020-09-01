@@ -5,11 +5,11 @@ use lib::math::*;
 use crate::coord::*;
 use doryen_fov::{
     FovAlgorithm,
-    FovRestrictive,
     FovRecursiveShadowCasting,
     MapData
 };
 
+const PLAYER_VIEW_RADIUS: usize = 20;
 const MAX_PLAYER_MEMORY: usize = 1024 * 1024 * 1024;
 
 pub fn player_tick(st: &mut State) {
@@ -21,7 +21,7 @@ pub fn player_tick(st: &mut State) {
     let map_height = st.dungeon.levels[player.level].height;
 
     // so first we update the FOV
-    let mut fov = FovRestrictive::new();
+    let mut fov = FovRecursiveShadowCasting::new();
     let mut map = MapData::new(map_width, map_height);
 
     let starty = player_y.saturating_sub(map_height / 2);
@@ -44,7 +44,7 @@ pub fn player_tick(st: &mut State) {
     }
 
     map.clear_fov();
-    fov.compute_fov(&mut map, player_x, player_y, 10, true);
+    fov.compute_fov(&mut map, player_x, player_y, PLAYER_VIEW_RADIUS, true);
 
     player.in_fov = Vec::new();
     for y in startx..endy {

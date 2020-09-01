@@ -148,13 +148,15 @@ impl Display<'_> {
                         continue;
                 }
 
-                let mut cell = self.tile_as_cell(&level.d[y as usize][x as usize]);
+                let tile = &level.d[y as usize][x as usize];
+                let mut cell = self.tile_as_cell(tile);
 
                 if !st.dungeon.player.in_fov.contains(&(y as usize, x as usize)) {
                     if st.dungeon.player.memory.contains(&(y as usize, x as usize)) {
-                        cell.bg = Color::from(cell.bg).darken(3).as_u32();
-                        cell.fg = Color::from(cell.fg).darken(3).as_u32();
-                        cell.ch = ' ' as u32;
+                        cell.bg = Color::from(cell.bg).darken(5).as_u32();
+                        cell.fg = Color::from(cell.fg).darken(5).as_u32();
+                        cell.ch = if tile.tiletype == TileType::Wall { ' ' as u32 }
+                                  else { cell.ch };
                     } else {
                         cell.fg = Color::new(0, 0, 0, 0).as_u32();
                         cell.bg = Color::new(0, 0, 0, 0).as_u32();

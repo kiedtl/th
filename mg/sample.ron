@@ -23,19 +23,19 @@ DungeonSpecification(
             algorithms: [
                 RandomRooms(
                      RandomRoomsOptions(
-                         max_rooms: None,
-                         max_tunnels: Some(0),
-                         room_max_width: 16,
-                         room_max_height: 8,
+                         max_rooms: Some(50),
+                         max_tunnels: Some(5),
+                         room_max_width: 32,
+                         room_max_height: 16,
                          room_min_width: 4,
                          room_min_height: 2,
-                         room_border: 8,
+                         room_border: 6,
                      )
                  ),
 
                  Maze(
                      MazeOptions(
-                         remove_dead_ends: Some(5),
+                         remove_dead_ends: Some(512),
                          connect_to_features: true,
                          chance_for_connection: 1,
                      ),
