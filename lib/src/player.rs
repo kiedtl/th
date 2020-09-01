@@ -8,6 +8,8 @@ use rand::prelude::*;
 pub struct Player {
     pub coords: (usize, usize), // y, x
     pub level: usize,
+    pub in_fov: Vec<(usize, usize)>,
+    pub memory: Vec<(usize, usize)>,
 }
 
 impl Player {
@@ -39,6 +41,8 @@ impl Player {
                 return Player {
                     coords: *coord,
                     level: 0usize,
+                    in_fov: Vec::new(),
+                    memory: Vec::new(),
                 };
             }
         }
@@ -53,6 +57,8 @@ impl Player {
         Player {
             coords: coord,
             level: 0,
+            in_fov: Vec::new(),
+            memory: Vec::new(),
         }
     }
 }

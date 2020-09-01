@@ -5,6 +5,7 @@ mod message;
 mod priority;
 mod state;
 mod tb;
+mod tick;
 
 use crate::display::*;
 use crate::kbd::*;
@@ -63,6 +64,7 @@ fn main() {
 
     // game state
     let mut st: State = State::new(map);
+    tick::player_tick(&mut st);
 
     // keybindings
     let kbd = Keybindings::new();
@@ -105,13 +107,14 @@ fn main() {
                         _ => st.handle_action(action),
                     }
                 },
-                EventType::Resize(w, h) => {
-                    display.draw(&st);
-                    display.present();
-                },
+
+                // if the event type is EventType::Resize,
+                // then just ignore it as the screen will be
+                // redrawn later anyway
                 _ => (),
             }
 
+            tick::player_tick(&mut st);
             display.draw(&st);
             display.present();
         }

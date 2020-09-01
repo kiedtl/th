@@ -74,6 +74,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "doryen-fov"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2a8e6ef8177b52d581c728655ff05fe03a6634ed496fc2c6642bb17b91d27aa9"
+
+[[package]]
 name = "fuchsia-cprng"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -374,6 +380,7 @@ name = "th"
 version = "0.1.0"
 dependencies = [
  "backtrace",
+ "doryen-fov",
  "lib",
  "ron",
  "serde",

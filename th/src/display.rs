@@ -143,19 +143,31 @@ impl Display<'_> {
                             tb_change_cell(xctr, yctr, ' ' as u32, 0xffffff, 0x000000);
                         }
 
-
                         if xctr >= max_x { break; }
                         else { xctr += 1; }
                         continue;
                 }
 
                 let mut cell = self.tile_as_cell(&level.d[y as usize][x as usize]);
+
+                if !st.dungeon.player.in_fov.contains(&(y as usize, x as usize)) {
+                    if st.dungeon.player.memory.contains(&(y as usize, x as usize)) {
+                        cell.bg = Color::from(cell.bg).darken(3).as_u32();
+                        cell.fg = Color::from(cell.fg).darken(3).as_u32();
+                        cell.ch = ' ' as u32;
+                    } else {
+                        cell.fg = Color::new(0, 0, 0, 0).as_u32();
+                        cell.bg = Color::new(0, 0, 0, 0).as_u32();
+                    }
+                }
+
                 if x == cur_x && y == cur_y {
                     cell.bg = Color::new(255, 255, 255, 0)
                         .as_u32();
                     cell.fg = Color::new(0, 0, 0, 0).as_u32();
                     cell.ch = '@' as u32;
                 }
+
                 unsafe { tb_put_cell(xctr, yctr, &cell); }
 
                 if xctr >= max_x { break; }
@@ -182,13 +194,8 @@ impl Display<'_> {
                 glyph = tile_material.block_glyph;
             },
             TileType::Floor => {
-                glyph = ' ';
-                bg = Color {
-                    red: bg.red / 32,
-                    green: bg.green / 32,
-                    blue: bg.blue / 32,
-                    alpha: bg.alpha,
-                };
+                glyph = '·';
+                bg = bg.darken(32);
             },
         }
 
