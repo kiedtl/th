@@ -6,7 +6,6 @@
   - if next to player; attack, if not, stay still
     - if heavily wounded, run away
     - once recovered of wounds, come back
-- respond to resizes
 - huge refactoring
 
 ## mv (mapview)
