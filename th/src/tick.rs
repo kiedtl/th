@@ -44,20 +44,23 @@ where
                 let cur_pos = Coord::from((y, x));
 
                 // get random direction
-                let new_pos = cur_pos.neighbor_in_direction(rng.gen())
-                    .clamp_x(st.dungeon.levels[lvl].width)
-                    .clamp_y(st.dungeon.levels[lvl].height)
-                    .as_yx();
+                let mut new_pos = cur_pos.as_yx();
+                for _ in 0..8 {
+                    new_pos = cur_pos.neighbor_in_direction(rng.gen())
+                        .clamp_x(st.dungeon.levels[lvl].width)
+                        .clamp_y(st.dungeon.levels[lvl].height)
+                        .as_yx();
+                    if st.dungeon.at(lvl, new_pos).tiletype != TileType::Wall {
+                            break;
+                    }
+                }
 
                 if st.dungeon.at(lvl, new_pos).tiletype == TileType::Wall {
-                    // do nothing
-                    // in the future, though, we'll check if the player
-                    // has a pickaxe in his inventory and if so, demolish
-                    // the wall
-                } else {
-                    st.dungeon.move_mob(lvl, cur_pos.as_yx(),
-                        lvl, new_pos, true).unwrap();
+                        continue;
                 }
+
+                st.dungeon.move_mob(lvl, cur_pos.as_yx(),
+                    lvl, new_pos, true).unwrap();
             }
         }
     }

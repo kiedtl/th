@@ -111,6 +111,9 @@ fn main() {
             tick::player_tick(&mut st);
             display.draw(&st);
             display.present();
+        } else if t == (TB_EVENT_RESIZE as i32) {
+            display.draw(&st);
+            display.present();
         }
     }
 
