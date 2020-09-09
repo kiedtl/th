@@ -1,6 +1,3 @@
-// the final finished dungeon in its final format
-// yay
-
 use chrono::prelude::*;
 use crate::dun_s1::*;
 use crate::dun_s2::*;
@@ -9,6 +6,7 @@ use crate::mob::*;
 use rand::prelude::*;
 use serde::{Serialize, Deserialize};
 use std::vec::Vec;
+use std::collections::HashMap;
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct Dungeon {
@@ -16,20 +14,22 @@ pub struct Dungeon {
     pub created_on: i64,
     pub levels: Vec<DungeonS2>,
     pub player: Player,
+    pub mobs: HashMap<u64, Mob>,
 }
 
 impl Dungeon {
-    // create dungeon and place player yay
+    // create dungeon and place player
     pub fn from_dungeon_s2<R>(name: String, lvls: &mut Vec<DungeonS2>,
-        rng: &mut R, mob: &MobTemplate) -> Dungeon
+        rng: &mut R, player_template: &MobTemplate, mut mobs: HashMap<u64, Mob>) -> Dungeon
     where
         R: Rng
     {
-        let player = Player::new(&mut lvls[0], rng, mob);
+        let player = Player::new(&mut lvls[0], &mut mobs, 0, rng, player_template);
         Dungeon {
             world_name: name,
             created_on: Local::now().timestamp(),
             levels: lvls.to_vec(),
+            mobs: mobs,
             player: player,
         }
     }

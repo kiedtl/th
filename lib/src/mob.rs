@@ -3,6 +3,7 @@ use crate::id::*;
 use crate::value::*;
 use rand::prelude::*;
 use serde::{Serialize, Deserialize};
+use std::hash::{Hash, Hasher};
 
 #[derive(Copy, Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub enum MobBody {
@@ -15,7 +16,7 @@ pub enum MobBody {
     Tail,
 }
 
-#[derive(Copy, Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug, Hash, PartialEq, Serialize, Deserialize)]
 pub enum MobGender {
     Male,
     NonBinary,
@@ -55,12 +56,17 @@ impl MobMovement {
     }
 }
 
-#[derive(Copy, Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug, Hash, PartialEq, Serialize, Deserialize)]
 pub enum MobAlignment {
-    Hostile,        // the creatures is hostile to the player
-    NeutralHostile, // the creature is neutral but will turn hostile if attacked
-    Neutral,        // the creature is neutral, and will flee if attacked
-    Friendly,       // the creature is friendly, and will flee if attacked
+    // attacks if attacked, attacks if not attacked
+    Hostile,
+
+    // attacks if attacked, peaceful otherwise
+    Neutral,
+
+    // prefers to flee if attacked. other Hostile mobs
+    // will attack it. will attack Hostile mobs.
+    Friendly,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -219,14 +225,24 @@ impl MobTemplate {
             normal_body_temperature: self.normal_body_temperature.get(rng),
             min_body_temperature: self.max_body_temperature.get(rng),
             max_body_temperature: self.min_body_temperature.get(rng),
-            strength: self.strength.get(rng),
-            agility: self.agility.get(rng),
-            endurance: self.endurance.get(rng),
-            metabolism: self.metabolism.get(rng),
-            willpower: self.willpower.get(rng),
-            focus: self.focus.get(rng),
+
+            max_strength: self.strength.get(rng),
+            max_agility: self.agility.get(rng),
+            max_endurance: self.endurance.get(rng),
+            max_metabolism: self.metabolism.get(rng),
+            max_willpower: self.willpower.get(rng),
+            max_focus: self.focus.get(rng),
+            max_intelligence: self.intelligence.get(rng),
+
+            strength: 100,
+            agility: 100,
+            endurance: 100,
+            metabolism: 100,
+            willpower: 100,
+            focus: 100,
+            intelligence: 100,
+
             bravery: self.bravery.get(rng),
-            intelligence: self.intelligence.get(rng),
             aggressive: self.aggressive.get(rng),
             age: self.age.get(rng),
             max_age: max_age,
@@ -252,14 +268,18 @@ pub enum MobMode {
 pub struct Mob {
     // fields that are not unique to each specific mob (e.g. short_name,
     // vampire, or needs_drink) are not put here.
+
+    // these fields are UNIQUE to each mob
+    // and will never change
+    // <unique>
     pub from_mob_template: String,
 
-    pub gender: MobGender,
     pub body: Vec<MobBody>,
 
     pub ascii_glyph: char,
     pub unicode_glyph: char,
     pub glyph_fg: Option<Color>,
+
 
     pub alignment: MobAlignment,
     pub height: u16,
@@ -270,14 +290,35 @@ pub struct Mob {
     pub min_body_temperature: usize,
     pub max_body_temperature: usize,
 
+    pub gender: MobGender,
+
+    pub max_strength: u8,
+    pub max_agility: u8,
+    pub max_endurance: u8,
+    pub max_metabolism: u8,
+    pub max_willpower: u8,
+    pub max_focus: u8,
+    pub max_intelligence: u8,
+    // </unique>
+
+    // percentage of max_<field>
+    // so for example, a mob may have a max
+    // strength of 100 but due to, say,
+    // hunger or drowsiness will have
+    // only 20% of max_strength (so
+    // strength=20 instead of 100)
+    //
+    // these fields will change for each mob
+    // as the game progresses
     pub strength: u8,
     pub agility: u8,
     pub endurance: u8,
     pub metabolism: u8,
     pub willpower: u8,
     pub focus: u8,
-    pub bravery: u8,
     pub intelligence: u8,
+
+    pub bravery: u8,
     pub aggressive: u8,
 
     pub age: u64,
@@ -287,4 +328,30 @@ pub struct Mob {
     pub opposed_to_life: bool,
 
     pub current_mode: MobMode,
+}
+
+impl std::hash::Hash for Mob {
+    fn hash<H>(&self, state: &mut H)
+    where
+        H: Hasher
+    {
+        // hash unique, non-changing fields
+        self.from_mob_template.hash(state);
+        self.ascii_glyph.hash(state);
+        self.glyph_fg.hash(state);
+        self.alignment.hash(state);
+        self.height.hash(state);
+        self.width.hash(state);
+        self.weight.hash(state);
+        self.normal_body_temperature.hash(state);
+        self.min_body_temperature.hash(state);
+        self.max_body_temperature.hash(state);
+        self.gender.hash(state);
+        self.max_strength.hash(state);
+        self.max_agility.hash(state);
+        self.max_endurance.hash(state);
+        self.max_metabolism.hash(state);
+        self.max_focus.hash(state);
+        self.max_intelligence.hash(state);
+    }
 }

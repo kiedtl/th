@@ -12,6 +12,7 @@ use std::collections::HashMap;
 
 const PLAYER_VIEW_RADIUS: usize = 5;
 const MAX_PLAYER_MEMORY: usize = 1024 * 1024 * 1024;
+const MOB_VISION: usize = 3;
 
 pub fn mobs_tick<R>(st: &mut State, mobs: &HashMap<String, MobTemplate>, rng: &mut R)
 where

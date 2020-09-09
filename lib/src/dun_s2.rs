@@ -1,6 +1,5 @@
 use crate::dun_s1::*;
 use crate::features::*;
-use crate::mob::*;
 use serde::{Serialize, Deserialize};
 use std::vec::Vec;
 
@@ -11,7 +10,7 @@ pub struct DungeonTile {
 
     // TODO: define Item structs
     pub items: Vec<u8>,
-    pub mobs: Option<Mob>,
+    pub mobs: Option<u64>, // mob id
 
     // in kelvin, of course
     pub temperature: f64,
