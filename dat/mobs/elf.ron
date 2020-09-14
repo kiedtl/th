@@ -18,7 +18,7 @@ MobTemplate(
 			green: 255, alpha: 0,
 		)
 	),
-	alignment: NeutralHostile,
+	alignment: Neutral,
 	height: Random(198, 228), // between 6.5ft and 7.5ft
 	width: Random(30, 45), // emaciated I'm sure
 	weight: Random(81, 113), // ^^

@@ -37,7 +37,7 @@ impl<R: Rng> MobPlacer<'_, R> {
         }
     }
 
-    pub fn generate(&mut self, mobs: &mut Vec<MobTemplate>) {
+    pub fn generate(&mut self, mobs: &mut Vec<MobTemplate>) -> HashMap<u64, Mob> {
         let noise = self.options.noise_algorithm
             .as_noisefn(self.rng.gen());
 
@@ -54,6 +54,9 @@ impl<R: Rng> MobPlacer<'_, R> {
 
         // track how many of each mob **class** is in the map
         let mut mob_class_ctr: HashMap<MobClass, usize> = HashMap::new();
+
+        // a table of each mob by id
+        let mut mob_table: HashMap<u64, Mob> = HashMap::new();
 
         // get list of all tiles in the map
         let mut coords: Vec<(usize, usize)> = Vec::new();
@@ -99,10 +102,15 @@ impl<R: Rng> MobPlacer<'_, R> {
             }
 
             if let Some(template) = chosen_mob {
-                self.map.d[y][x].mobs = Some(template.generate_mob(self.rng));
+                let mobbo = template.generate_mob(self.rng);
+                let mobbo_id = lib::utils::calculate_hash(&mobbo);
+                self.map.d[y][x].mobs = Some(mobbo_id);
+                mob_table.insert(mobbo_id, mobbo);
             } else {
                 continue;
             }
         }
+
+        return mob_table;
     }
 }

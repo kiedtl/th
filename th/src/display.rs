@@ -4,6 +4,7 @@ use lib::colors::*;
 use lib::dun_s1::*;
 use lib::dun_s2::*;
 use lib::material::*;
+use lib::mob::*;
 use std::collections::HashMap;
 use termbox_sys::*;
 
@@ -149,7 +150,7 @@ impl Display<'_> {
                 }
 
                 let tile = &level.d[y as usize][x as usize];
-                let mut cell = self.tile_as_cell(tile);
+                let mut cell = self.tile_as_cell(tile, &st.dungeon.mobs);
 
                 if !st.dungeon.player.in_fov.contains(&(y as usize, x as usize)) {
                     if st.dungeon.player.memory.contains(&(y as usize, x as usize)) {
@@ -184,7 +185,9 @@ impl Display<'_> {
     }
 
     // helper func to get a single tile as a RawCell
-    fn tile_as_cell(&self, tile: &DungeonTile) -> RawCell {
+    fn tile_as_cell(&self, tile: &DungeonTile, mob_table: &HashMap<u64, Mob>)
+        -> RawCell
+    {
         let tile_material = &self.materials[&tile.tile_material];
         let mut bg = tile_material.color_bg;
         let mut fg = tile_material.color_fg;
@@ -201,7 +204,10 @@ impl Display<'_> {
             },
         }
 
-        if let Some(mob) = &tile.mobs {
+        if let Some(mob_id) = &tile.mobs {
+            assert!(mob_table.contains_key(mob_id));
+            let mob = &mob_table[mob_id];
+
             bg = Color::new(0, 0, 0, 0);
             glyph = mob.unicode_glyph;
             if let Some(mob_fg) = mob.glyph_fg {

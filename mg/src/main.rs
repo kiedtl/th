@@ -35,6 +35,7 @@ fn main() {
     let mut mobs:        HashMap<String, MobTemplate>  = HashMap::new();
     let mut dungeons_s1: Vec<DungeonS1> = Vec::new();
     let mut dungeons_s2: Vec<DungeonS2> = Vec::new();
+    let mut mob_table:   HashMap<u64, Mob> = HashMap::new();
 
     // check arguments
     let args = std::env::args().collect::<Vec<String>>();
@@ -122,8 +123,9 @@ fn main() {
             let mut new_map = DungeonS2::from_dungeon_s1(&map);
             MineralPlacer::new(&mut new_map, layer.composition, &mut rng)
                 .generate(materials.values().cloned().collect());
-            MobPlacer::new(&mut new_map, layer.inhabitants.clone(), &mut rng)
+            let new_mobs = MobPlacer::new(&mut new_map, layer.inhabitants.clone(), &mut rng)
                 .generate(&mut mobs.values().cloned().collect::<Vec<MobTemplate>>());
+            mob_table.extend(new_mobs);
             dungeons_s1.push(map);
             dungeons_s2.push(new_map);
         }
@@ -132,7 +134,7 @@ fn main() {
     // ensure that the info file isn't missing
     assert!(mobs.contains_key(PLAYER_MOB));
     let dungeon = Dungeon::from_dungeon_s2(config.world_name, &mut dungeons_s2,
-        &mut rng, &mobs[PLAYER_MOB]);
+        &mut rng, &mobs[PLAYER_MOB], mob_table);
 
     fs::write("map.ron", ron::to_string(&dungeon).unwrap().as_bytes()).unwrap();
 }

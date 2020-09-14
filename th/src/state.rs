@@ -1,4 +1,4 @@
-use crate::coord::*;
+use lib::coord::*;
 use crate::kbd::*;
 use crate::message::*;
 use lib::priority::*;

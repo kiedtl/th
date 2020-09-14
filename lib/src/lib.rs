@@ -1,4 +1,5 @@
 pub mod colors;
+pub mod coord;
 pub mod dirs;
 pub mod dun_s1;
 pub mod dun_s2;

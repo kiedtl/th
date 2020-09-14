@@ -1,5 +1,5 @@
 use crate::state::*;
-use crate::coord::*;
+use lib::coord::*;
 use rand::prelude::*;
 use lib::dun_s1::*;
 use lib::mob::*;
@@ -28,10 +28,11 @@ where
                 let tile = st.dungeon.at(lvl, (y, x));
 
                 // is there even a mob here
-                let mob: Mob;
+                let mob: &Mob;
                 let mobtemplate: &MobTemplate;
-                if let Some(m) = tile.mobs {
-                    mob = m;
+                if let Some(mob_id) = tile.mobs {
+                    assert!(st.dungeon.mobs.contains_key(&mob_id));
+                    mob = &st.dungeon.mobs[&mob_id];
                     mobtemplate = &mobs[&mob.from_mob_template];
                 } else {
                     continue;

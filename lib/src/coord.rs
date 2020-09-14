@@ -1,4 +1,4 @@
-use lib::dirs::*;
+use crate::dirs::*;
 
 pub struct Coord {
     x: usize,

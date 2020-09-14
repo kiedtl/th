@@ -1,4 +1,3 @@
-mod coord;
 mod display;
 mod kbd;
 mod message;
