@@ -10,8 +10,6 @@ use std::collections::HashMap;
 pub struct Player {
     pub coords: (usize, usize),
     pub level: usize,
-    pub in_fov: Vec<(usize, usize)>,
-    pub memory: Vec<(usize, usize)>,
 }
 
 impl Player {
@@ -59,8 +57,6 @@ impl Player {
                 return Player {
                     coords: *coord,
                     level: level_no,
-                    in_fov: Vec::new(),
-                    memory: Vec::new(),
                 };
             }
         }
@@ -75,8 +71,6 @@ impl Player {
         Player {
             coords: coord,
             level: level_no,
-            in_fov: Vec::new(),
-            memory: Vec::new(),
         }
     }
 }

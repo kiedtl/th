@@ -3,7 +3,7 @@ use crate::features::*;
 use serde::{Serialize, Deserialize};
 use std::vec::Vec;
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct DungeonTile {
     pub tiletype: TileType,
     pub tile_material: String,

@@ -1,6 +1,8 @@
 use crate::colors::*;
+use crate::coord::*;
 use crate::id::*;
 use crate::value::*;
+use crate::dun_s2::*;
 use rand::prelude::*;
 use serde::{Serialize, Deserialize};
 use std::hash::{Hash, Hasher};
@@ -249,6 +251,9 @@ impl MobTemplate {
             undead: self.undead,
             opposed_to_life: self.opposed_to_life,
             current_mode: MobMode::Wander,
+
+            fov: Vec::new(),
+            memory: Vec::new(),
         }
     }
 }
@@ -328,6 +333,9 @@ pub struct Mob {
     pub opposed_to_life: bool,
 
     pub current_mode: MobMode,
+
+    pub fov: Vec<Coord>,
+    pub memory: Vec<(Coord, DungeonTile)>,
 }
 
 impl std::hash::Hash for Mob {

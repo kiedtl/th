@@ -1,5 +1,7 @@
 use crate::dirs::*;
+use serde::{Serialize, Deserialize};
 
+#[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Coord {
     x: usize,
     y: usize,
