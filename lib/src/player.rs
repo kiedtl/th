@@ -6,7 +6,7 @@ use rand::prelude::*;
 use crate::utils;
 use std::collections::HashMap;
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Player {
     pub coords: (usize, usize),
     pub level: usize,
@@ -19,9 +19,10 @@ impl Player {
     // note that the only checks done to ensure a tile
     // is a "suitable" tile is to ensure its empty (that is, no wall there),
     // and that there isn't already another mob there.
-    // thus, the "suitable" spot may end up being pretty dangerous,
-    // for example, right in a pool of magma,
-    // or maybe in the middle of a hord of burning brutes.
+    // thus, the "suitable" spot may end up being pretty dangerous.
+    // (for example, right in a pool of magma, or maybe in the middle
+    // of a hord of burning brutes, or a nest of grues, or next
+    // to Sauron, or whatever.)
     pub fn new<R>(level: &mut DungeonS2, mob_table: &mut HashMap<u64, Mob>,
         level_no: usize, r: &mut R, m: &MobTemplate) -> Player
     where

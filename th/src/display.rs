@@ -1,6 +1,7 @@
 use crate::state::*;
 use crate::tb::*;
 use lib::colors::*;
+use lib::coord::*;
 use lib::dun_s1::*;
 use lib::dun_s2::*;
 use lib::material::*;
@@ -9,9 +10,7 @@ use std::collections::HashMap;
 use termbox_sys::*;
 
 enum DisplayWindow {
-    Map,
-    Message,
-    Detail,
+    Map, Message, Detail,
 }
 
 impl DisplayWindow {
@@ -36,8 +35,7 @@ impl DisplayWindow {
 }
 
 pub enum DisplayMode {
-    SDL,
-    Console,
+    SDL, Console,
 }
 
 pub struct Display<'a> {
@@ -125,6 +123,10 @@ impl Display<'_> {
         let cur_y = st.dungeon.player.coords.0 as i32;
         let cur_x = st.dungeon.player.coords.1 as i32;
 
+        let player_mob_id = st.dungeon.at(st.dungeon.player.level,
+            (cur_y as usize, cur_x as usize)).mobs.unwrap();
+        let player_mob = &st.dungeon.mobs[&player_mob_id];
+
         // xctr/yctr is the current position on the screen
         // max_x/max_y is the maximum size of a window
         let (mut xctr, mut yctr, max_x, max_y) =
@@ -137,6 +139,8 @@ impl Display<'_> {
 
         for y in starty..endy {
             for x in startx..endx {
+                let coord = Coord::from((y, x));
+
                 // if out of bounds of the map, just draw a black tile
                 if (y < 0 || x < 0) ||
                     (y as usize >= level.height || x as usize >= level.width) {
@@ -149,21 +153,31 @@ impl Display<'_> {
                         continue;
                 }
 
-                let tile = &level.d[y as usize][x as usize];
+                let mut tile = &level.d[y as usize][x as usize];
                 let mut cell = self.tile_as_cell(tile, &st.dungeon.mobs);
 
-                if !st.dungeon.player.in_fov.contains(&(y as usize, x as usize)) {
-                    if st.dungeon.player.memory.contains(&(y as usize, x as usize)) {
+                // if the player cannot see the square, but the player
+                // has seen it before, color it a darker color
+                if !player_mob.fov.contains(&coord) {
+                    if player_mob.memory.contains_key(&coord) {
+                        // show the tile as the player remembers it, not
+                        // as it really is
+                        tile = &player_mob.memory[&coord];
+                        cell = self.tile_as_cell(tile, &st.dungeon.mobs);
+
                         cell.bg = Color::from(cell.bg).darken(5).as_u32();
                         cell.fg = Color::from(cell.fg).darken(5).as_u32();
                         cell.ch = if tile.tiletype == TileType::Wall { ' ' as u32 }
                                   else { cell.ch };
                     } else {
+                        // the player hasn't seen this tile at all;
+                        // make it have a black background
                         cell.fg = Color::new(0, 0, 0, 0).as_u32();
                         cell.bg = Color::new(0, 0, 0, 0).as_u32();
                     }
                 }
 
+                // set the player's tile background to white
                 if x == cur_x && y == cur_y {
                     cell.bg = Color::new(255, 255, 255, 0)
                         .as_u32();

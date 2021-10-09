@@ -4,32 +4,39 @@ const PLAYER_TITLES: &[&str] = [
     "Greenhorn",
     "Unwelcome Visitor",
     "Sneak",
-    "Legend",
+    "Cut-throat",
+    "Unseen",
+    "Undiscernible",
+    "Invisible",
+    "Phantom",
 ];
 
 const CONFUSED_PLAYER_TITLES: &[&str] = [
-    // should be obvious what this is
+    // it should be obvious what this is.
     "Befuddled",
-    "Drunk",
     "Clueless",
+    "Half-Wit",
 
-    // delusions of grandeur
+    // delusions of grandeur.
     "Demon Butcher",
     "Bane of Melkor",
     "King of Middle Earth",
     "Grue-chomper",
 
-    // misc lol
+    // misc
     "President",
     "Poisonous beast",
-    "Kim Jong Un (undercover)",
+    "Kim Jong Un",
+    "Dotard Drump",
     "Queen of England",
     "Emperor of Japan",
 
-    // player imagines themself to be
-    // melkor or sauron
+    // misc 2
     "Lord of Angband",
     "Dark Enemy",
     "Lord of Abominations",
     "Necromancer",
+
+    // misc 3
+    "Lord of the Blessed Realm",
 ];

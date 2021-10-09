@@ -1,10 +1,22 @@
 use crate::dirs::*;
 use serde::{Serialize, Deserialize};
+use std::hash::{Hash, Hasher};
 
-#[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[derive(Serialize, Deserialize)]
 pub struct Coord {
     x: usize,
     y: usize,
+}
+
+impl Hash for Coord {
+    fn hash<H>(&self, state: &mut H)
+    where
+        H: Hasher
+    {
+        self.y.hash(state);
+        self.x.hash(state);
+    }
 }
 
 impl From<(usize, usize)> for Coord {

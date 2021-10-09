@@ -6,6 +6,7 @@ use crate::dun_s2::*;
 use rand::prelude::*;
 use serde::{Serialize, Deserialize};
 use std::hash::{Hash, Hasher};
+use std::collections::HashMap;
 
 #[derive(Copy, Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub enum MobBody {
@@ -156,20 +157,28 @@ pub struct MobTemplate {
     pub movement: MobMovement,
 
     // what age is the character right now? (in years)
+    // the age of a mob increases as the game progresses; when
+    // the age == max_age, the creature dies of old age.
     pub age: Value<u64>,
     pub max_age: Option<Value<u64>>, // demons don't die of old age
 
     // most demons will have this
     // controls whether character will be able to summon other demons
-    // to their aid
+    // to assist them
     pub summoner: bool,
     pub summonable: bool,
 
+    // undead creatures do not die of old age, do not feel fear,
+    // and do not feel pain or exhaustion
+    //
+    // examples: vampires, zombies
     pub undead: bool,
 
-    // *most* undead creatures will have this
-    // a creature that is opposed_to_life will attack any living thing, even
-    // a servant of Morgoth, even Morgoth himself lol
+    // Undead creatures that are opposed_to_life will attack everything
+    // and anything (except the necromancer that raised it), up to
+    // and including Morgoth himself.
+    //
+    // examples: the Grue
     pub opposed_to_life: bool,
 
     // controls how many corpses that character can raise non-necromancers
@@ -253,7 +262,7 @@ impl MobTemplate {
             current_mode: MobMode::Wander,
 
             fov: Vec::new(),
-            memory: Vec::new(),
+            memory: HashMap::new(),
         }
     }
 }
@@ -307,11 +316,9 @@ pub struct Mob {
     // </unique>
 
     // percentage of max_<field>
-    // so for example, a mob may have a max
-    // strength of 100 but due to, say,
-    // hunger or drowsiness will have
-    // only 20% of max_strength (so
-    // strength=20 instead of 100)
+    // so for example, a mob may have a max strength of 234 but
+    // due to, say, hunger or drowsiness will have only 20%
+    // of max_strength (so strength=20 instead of 100)
     //
     // these fields will change for each mob
     // as the game progresses
@@ -335,7 +342,7 @@ pub struct Mob {
     pub current_mode: MobMode,
 
     pub fov: Vec<Coord>,
-    pub memory: Vec<(Coord, DungeonTile)>,
+    pub memory: HashMap<Coord, DungeonTile>,
 }
 
 impl std::hash::Hash for Mob {
